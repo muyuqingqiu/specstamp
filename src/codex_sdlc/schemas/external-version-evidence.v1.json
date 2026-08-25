@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "external-version-evidence.v1",
+  "title": "外部版本证据合同",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "normalized_url_sha256", "status", "evidence"],
+  "properties": {
+    "schema_version": {
+      "const": "external-version-evidence.v1"
+    },
+    "normalized_url_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": ["confirmed", "unversioned", "blocked", "drifted"]
+    },
+    "evidence": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "material_id", "sha256"],
+          "properties": {
+            "kind": {"const": "local_snapshot"},
+            "material_id": {"type": "string", "pattern": "^MAT-[0-9]+$"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "provider", "revision"],
+          "properties": {
+            "kind": {"const": "immutable_revision"},
+            "provider": {"enum": ["git", "document", "api", "other"]},
+            "revision": {"type": "string", "minLength": 1, "maxLength": 256}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "file_key", "version_id"],
+          "properties": {
+            "kind": {"const": "figma_revision"},
+            "file_key": {"type": "string", "minLength": 1, "maxLength": 256},
+            "version_id": {"type": "string", "minLength": 1, "maxLength": 256},
+            "page_id": {"type": "string", "minLength": 1, "maxLength": 256},
+            "node_id": {"type": "string", "minLength": 1, "maxLength": 256},
+            "node_revision": {"type": "string", "minLength": 1, "maxLength": 256}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "etag", "fetched_sha256", "fetched_at"],
+          "properties": {
+            "kind": {"const": "etag_content"},
+            "etag": {"type": "string", "minLength": 1, "maxLength": 512},
+            "fetched_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "fetched_at": {"type": "string", "format": "date-time"}
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {"const": "confirmed"}
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence": {"not": {"type": "null"}}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"const": "unversioned"}
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence": {"type": "null"}
+        }
+      }
+    }
+  ]
+}

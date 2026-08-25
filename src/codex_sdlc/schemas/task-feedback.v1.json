@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task-feedback.v1",
+  "title": "任务运行用户反馈",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "feedback_id",
+    "requirement_id",
+    "task_id",
+    "run_number",
+    "source",
+    "content",
+    "affected_refs",
+    "changes_contract"
+  ],
+  "properties": {
+    "schema_version": {"const": "task-feedback.v1"},
+    "feedback_id": {"type": "string", "pattern": "^FB-[0-9]{3,}$"},
+    "requirement_id": {"type": "string", "pattern": "^REQ-[0-9]{3,}$"},
+    "task_id": {"type": "string", "pattern": "^T-[0-9]{3,}$"},
+    "run_number": {"type": "integer", "minimum": 1},
+    "source": {
+      "type": "object",
+      "required": ["type", "received_at"],
+      "properties": {
+        "type": {"enum": ["user", "customer", "acceptance"]},
+        "received_at": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "content": {"type": "string", "minLength": 1},
+    "affected_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "changes_contract": {"type": "boolean"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"changes_contract": {"const": true}}},
+      "then": {
+        "properties": {
+          "affected_refs": {
+            "minItems": 1,
+            "contains": {"pattern": "^(?:FR|GR|AC|DES)-[0-9]{3,}(?:#.+)?$"}
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

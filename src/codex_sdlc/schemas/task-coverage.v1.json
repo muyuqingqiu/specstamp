@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task-coverage.v1",
+  "title": "任务覆盖合同",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "functional_requirements",
+    "design_artifacts",
+    "acceptance_criteria",
+    "effective_changes",
+    "no_development_items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "task-coverage.v1"
+    },
+    "requirement_id": {
+      "type": "string",
+      "pattern": "^REQ-[0-9]{3,}$"
+    },
+    "functional_requirements": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^FR-[0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/functional_coverage"
+      }
+    },
+    "design_artifacts": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(?:DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/task_coverage"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^AC-[0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/acceptance_coverage"
+      }
+    },
+    "effective_changes": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^CHG-[0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/task_coverage"
+      }
+    },
+    "no_development_items": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/no_development_item"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "task_ref": {
+      "type": "string",
+      "pattern": "^(?:@client:[a-z0-9][a-z0-9._-]{0,127}|T-[0-9]{3,})$"
+    },
+    "test_ref": {
+      "type": "string",
+      "pattern": "^(?:@client:[a-z0-9][a-z0-9._-]{0,127}|T-[0-9]{3,})#automated_tests/[0-9]+$"
+    },
+    "task_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/task_ref"
+      }
+    },
+    "task_coverage": {
+      "type": "object",
+      "required": ["tasks"],
+      "properties": {
+        "tasks": {
+          "$ref": "#/$defs/task_refs"
+        },
+        "primary_task": {
+          "$ref": "#/$defs/task_ref"
+        }
+      },
+      "additionalProperties": false
+    },
+    "functional_coverage": {
+      "type": "object",
+      "required": ["tasks", "status"],
+      "properties": {
+        "tasks": {
+          "$ref": "#/$defs/task_refs"
+        },
+        "primary_task": {
+          "$ref": "#/$defs/task_ref"
+        },
+        "status": {
+          "enum": ["implemented", "planned"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "acceptance_coverage": {
+      "type": "object",
+      "required": ["tasks", "test_refs"],
+      "properties": {
+        "tasks": {
+          "$ref": "#/$defs/task_refs"
+        },
+        "primary_task": {
+          "$ref": "#/$defs/task_ref"
+        },
+        "test_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/test_ref"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "no_development_item": {
+      "type": "object",
+      "required": ["source_type", "source_id", "reason", "basis_refs"],
+      "properties": {
+        "source_type": {
+          "enum": [
+            "functional_requirement",
+            "design_artifact",
+            "acceptance_criterion",
+            "effective_change"
+          ]
+        },
+        "source_id": {
+          "type": "string",
+          "pattern": "^(?:FR|AC|CHG|DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

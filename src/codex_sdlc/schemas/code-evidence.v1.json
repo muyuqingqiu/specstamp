@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "code-evidence.v1",
+  "title": "真实代码证据合同",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "owner_id",
+    "purpose",
+    "repo_key",
+    "worktree_key",
+    "git_head",
+    "dirty_paths_sha256",
+    "rules",
+    "dependencies",
+    "code_files",
+    "upstream_outputs",
+    "selected_paths_sha256",
+    "relevant_content_sha256",
+    "captured_at",
+    "evidence_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "code-evidence.v1"},
+    "owner_id": {
+      "type": "string",
+      "pattern": "^(?:DRAFT|REQ)-[0-9]{3,}$"
+    },
+    "purpose": {
+      "enum": ["integrated_design", "task_planning"]
+    },
+    "identity_contract": {
+      "enum": ["git-worktree.v1", "filesystem-worktree.v1"]
+    },
+    "repo_key": {"$ref": "#/$defs/sha256"},
+    "worktree_key": {"$ref": "#/$defs/sha256"},
+    "git_head": {
+      "oneOf": [
+        {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        {"const": "UNBORN"}
+      ]
+    },
+    "dirty_paths_sha256": {"$ref": "#/$defs/sha256"},
+    "rules": {"$ref": "#/$defs/plain_entries"},
+    "dependencies": {"$ref": "#/$defs/plain_entries"},
+    "code_files": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/code_entry"}
+    },
+    "upstream_outputs": {"$ref": "#/$defs/plain_entries"},
+    "selected_paths_sha256": {"$ref": "#/$defs/sha256"},
+    "relevant_content_sha256": {"$ref": "#/$defs/sha256"},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "evidence_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "plain_entry": {
+      "type": "object",
+      "required": ["path", "sha256", "git_state_sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"},
+        "state": {"enum": ["present", "missing"]},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "git_state_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "code_entry": {
+      "type": "object",
+      "required": ["path", "sha256", "git_state_sha256", "reason_ref"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"},
+        "state": {"enum": ["present", "missing"]},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "git_state_sha256": {"$ref": "#/$defs/sha256"},
+        "reason_ref": {"type": "string", "pattern": "^FR-[0-9]{3,}$"}
+      },
+      "additionalProperties": false
+    },
+    "plain_entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/plain_entry"}
+    }
+  }
+}

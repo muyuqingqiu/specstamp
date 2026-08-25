@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sdlc.atomic-import-registry.v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "packages"
+  ],
+  "properties": {
+    "schema": {
+      "const": "sdlc.atomic-import-registry.v1"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/registration"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "formal_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3,}$"
+    },
+    "registration": {
+      "type": "object",
+      "required": [
+        "package_key",
+        "package_sha256",
+        "mapping",
+        "destination",
+        "event_id",
+        "files",
+        "bundle_sha256"
+      ],
+      "properties": {
+        "package_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "package_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "mapping": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/formal_id"
+          }
+        },
+        "destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^EVT-[0-9]{8}-[0-9]{6,}$"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "bundle_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

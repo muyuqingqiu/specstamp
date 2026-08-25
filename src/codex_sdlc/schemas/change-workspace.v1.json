@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "change-workspace.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "change_id",
+    "request_key",
+    "workspace_path",
+    "status",
+    "base_versions",
+    "created_event_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "change-workspace.v1"
+    },
+    "requirement_id": {
+      "type": "string",
+      "pattern": "^REQ-[0-9]+$"
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^CHG-[0-9]+$"
+    },
+    "request_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "workspace_path": {
+      "type": "string",
+      "pattern": "^\\.codex-sdlc/requirements/[^/]+/changes/CHG-[0-9]+$"
+    },
+    "status": {
+      "const": "draft"
+    },
+    "base_versions": {
+      "type": "object",
+      "required": [
+        "requirement",
+        "design",
+        "test_matrix",
+        "reference_index",
+        "task_plan"
+      ],
+      "properties": {
+        "requirement": {
+          "$ref": "#/$defs/base_version"
+        },
+        "design": {
+          "$ref": "#/$defs/base_version"
+        },
+        "test_matrix": {
+          "$ref": "#/$defs/base_version"
+        },
+        "reference_index": {
+          "$ref": "#/$defs/base_version"
+        },
+        "task_plan": {
+          "$ref": "#/$defs/base_version"
+        }
+      },
+      "additionalProperties": false
+    },
+    "created_event_id": {
+      "type": "string",
+      "pattern": "^EVT-[0-9]{8}-[0-9]{6,}$"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "base_version": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

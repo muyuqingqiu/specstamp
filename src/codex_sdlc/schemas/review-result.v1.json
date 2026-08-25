@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review-result.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "review_id",
+    "stage",
+    "owner_id",
+    "reviewer_run_id",
+    "input_hashes",
+    "status",
+    "issues",
+    "notes",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "review-result.v1"
+    },
+    "review_id": {
+      "type": "string",
+      "pattern": "^REV-[0-9]{3,}$"
+    },
+    "stage": {
+      "enum": [
+        "requirement_split",
+        "integrated_design",
+        "task_plan"
+      ]
+    },
+    "owner_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3,}$"
+    },
+    "reviewer_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_hashes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/sha256"
+      }
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "needs_fix",
+        "stale"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reviewed_at": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "issue": {
+      "type": "object",
+      "required": [
+        "issue_id",
+        "severity",
+        "title",
+        "description",
+        "evidence_refs",
+        "affected_refs",
+        "required_fix"
+      ],
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "pattern": "^ISSUE-[0-9]{3,}$"
+        },
+        "severity": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "affected_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required_fix": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

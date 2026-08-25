@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specstamp"
+dynamic = ["version"]
+description = "SpecStamp 是一套面向 AI 编码 Agent 的本机优先交付工具，把需求、设计、任务、变更和验收证据连成可追溯流程"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [
+  {name = "muyuqingqiu"},
+]
+keywords = [
+  "specstamp",
+  "sdlc",
+  "agentic-coding",
+  "ai-coding-agents",
+  "local-first",
+  "spec-driven-development",
+  "document-first",
+  "codex",
+  "claude-code",
+  "requirements",
+  "task-management",
+  "design",
+  "acceptance",
+]
+# 当前实现依赖 fcntl 与 POSIX shell，仅支持 macOS / Linux 等 POSIX 系统，暂不支持 Windows。
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: POSIX",
+  "Operating System :: MacOS",
+  "Operating System :: Unix",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Build Tools",
+]
+dependencies = [
+  "jsonschema>=4.18,<5",
+  "pypdf>=6,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "build>=1,<2",
+  "setuptools>=77",
+]
+
+[project.scripts]
+specstamp = "codex_sdlc.cli:main"
+codex-sdlc = "codex_sdlc.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"codex_sdlc.schemas" = ["*.json"]
+
+[tool.setuptools.dynamic]
+version = {attr = "codex_sdlc.__version__"}

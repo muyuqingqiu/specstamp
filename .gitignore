@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+backups/
+/.venv/
+/.codex-sdlc.pre-restore-*/
+/src/*.egg-info/
+
+# 本机运行状态、临时证据和内部归档不进入公开仓库
+.codex/
+.codex-sdlc/
+.codex-sdlc.pre-restore-*/
+.codegraphcontext/
+/tmp/任务调度器/
+docs/归档/
+.DS_Store
+.coverage
+htmlcov/
+
+# 公开仓库治理文件需要覆盖本机全局忽略规则
+!.github/
+!.github/ISSUE_TEMPLATE/
+!.github/ISSUE_TEMPLATE/bug_report.md
+!.github/ISSUE_TEMPLATE/feature_request.md
+!.github/pull_request_template.md

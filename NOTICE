@@ -1,0 +1,11 @@
+SpecStamp
+
+Copyright 2026 muyuqingqiu
+
+本文件记录本项目的归属信息和直接依赖的许可证类型。各依赖项目的版权归其原作者所有，具体版本以发布包元数据为准，本文件不复制第三方许可证正文。
+
+- `jsonschema`：MIT License
+- `pypdf`：BSD-3-Clause
+- `pytest`（开发依赖）：MIT License
+- `setuptools`（构建依赖）：MIT License
+- `build`（构建依赖）：MIT License

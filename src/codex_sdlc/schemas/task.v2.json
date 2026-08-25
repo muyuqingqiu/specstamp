@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task.v2",
+  "title": "单任务合同",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/submission"
+    },
+    {
+      "$ref": "#/$defs/record"
+    }
+  ],
+  "$defs": {
+    "client_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^T-[0-9]{3,}$"
+    },
+    "task_dependency_submission": {
+      "type": "string",
+      "pattern": "^(?:@client:[a-z0-9][a-z0-9._-]{0,127}|T-[0-9]{3,})$"
+    },
+    "non_empty_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "text_items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/non_empty_text"
+      },
+      "uniqueItems": true
+    },
+    "required_text_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_empty_text"
+      },
+      "uniqueItems": true
+    },
+    "project_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "path_items": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/project_path"
+      }
+    },
+    "code_scope": {
+      "type": "object",
+      "required": [
+        "read_paths",
+        "likely_change_paths",
+        "protected_paths"
+      ],
+      "properties": {
+        "read_paths": {
+          "$ref": "#/$defs/path_items"
+        },
+        "likely_change_paths": {
+          "$ref": "#/$defs/path_items"
+        },
+        "protected_paths": {
+          "$ref": "#/$defs/path_items"
+        }
+      },
+      "additionalProperties": false
+    },
+    "technical_solution_ref": {
+      "type": "object",
+      "required": [
+        "id",
+        "reference_key"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}$"
+        },
+        "reference_key": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}(?:#[A-Za-z0-9][A-Za-z0-9._-]{0,127})?$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "common": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "requirement_id",
+        "title",
+        "goal",
+        "deliverables",
+        "requirement_refs",
+        "global_rule_refs",
+        "technical_solution_refs",
+        "design_refs",
+        "material_refs",
+        "change_refs",
+        "acceptance_refs",
+        "code_scope",
+        "implementation_requirements",
+        "data_api_page_component_requirements",
+        "states_and_exceptions",
+        "security_and_privacy",
+        "automated_tests",
+        "manual_checks",
+        "out_of_scope",
+        "blocking_conditions",
+        "definition_of_done"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "task.v2"
+        },
+        "requirement_id": {
+          "type": "string",
+          "pattern": "^REQ-[0-9]{3,}$"
+        },
+        "title": {
+          "$ref": "#/$defs/non_empty_text"
+        },
+        "goal": {
+          "$ref": "#/$defs/non_empty_text"
+        },
+        "deliverables": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "requirement_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^FR-[0-9]{3,}$"
+          }
+        },
+        "global_rule_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^GR-[0-9]{3,}$"
+          }
+        },
+        "technical_solution_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/technical_solution_ref"
+          }
+        },
+        "design_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(?:DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+          }
+        },
+        "material_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^MAT-[0-9]{3,}$"
+          }
+        },
+        "change_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^CHG-[0-9]{3,}$"
+          }
+        },
+        "acceptance_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^AC-[0-9]{3,}$"
+          }
+        },
+        "code_scope": {
+          "$ref": "#/$defs/code_scope"
+        },
+        "implementation_requirements": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "data_api_page_component_requirements": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "states_and_exceptions": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "security_and_privacy": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "automated_tests": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "manual_checks": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "out_of_scope": {
+          "$ref": "#/$defs/required_text_items"
+        },
+        "blocking_conditions": {
+          "$ref": "#/$defs/text_items"
+        },
+        "definition_of_done": {
+          "$ref": "#/$defs/required_text_items"
+        }
+      }
+    },
+    "submission": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "type": "object",
+          "required": [
+            "client_key",
+            "depends_on"
+          ],
+          "properties": {
+            "client_key": {
+              "$ref": "#/$defs/client_key"
+            },
+            "depends_on": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/task_dependency_submission"
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "record": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "type": "object",
+          "required": [
+            "task_id",
+            "depends_on"
+          ],
+          "properties": {
+            "task_id": {
+              "$ref": "#/$defs/task_id"
+            },
+            "depends_on": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/task_id"
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

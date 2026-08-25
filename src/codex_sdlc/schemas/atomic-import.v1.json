@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sdlc.atomic-import.v1",
+  "x-codex-sdlc-hash-exclude": [
+    "/package_sha256"
+  ],
+  "type": "object",
+  "required": [
+    "schema",
+    "package_key",
+    "package_sha256",
+    "destination",
+    "objects",
+    "files"
+  ],
+  "properties": {
+    "schema": {
+      "const": "sdlc.atomic-import.v1"
+    },
+    "package_key": {
+      "$ref": "#/$defs/package_key"
+    },
+    "package_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "destination": {
+      "$ref": "#/$defs/relative_path"
+    },
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/import_object"
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/import_file"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "package_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "client_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "temporary_reference": {
+      "type": "string",
+      "pattern": "^@client:[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "id_prefix": {
+      "enum": [
+        "AC",
+        "API",
+        "ART",
+        "CAP",
+        "CHG",
+        "COMP",
+        "DATA",
+        "DEC",
+        "DEPLOY",
+        "DES",
+        "DF",
+        "DRAFT",
+        "FIELD",
+        "FR",
+        "GR",
+        "GRILL",
+        "MAT",
+        "PAGE",
+        "REQ",
+        "REV",
+        "RF",
+        "SAFE",
+        "SESSION",
+        "SPEC",
+        "SRC",
+        "T",
+        "TC",
+        "VRF"
+      ]
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\u0000).+$"
+    },
+    "import_object": {
+      "type": "object",
+      "required": [
+        "client_key",
+        "id_prefix",
+        "depends_on"
+      ],
+      "properties": {
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "id_prefix": {
+          "$ref": "#/$defs/id_prefix"
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/temporary_reference"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "import_file": {
+      "type": "object",
+      "required": [
+        "relative_path",
+        "content"
+      ],
+      "properties": {
+        "relative_path": {
+          "$ref": "#/$defs/relative_path"
+        },
+        "content": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sdlc.review-trust-registry.v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "requests",
+    "registrations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "sdlc.review-trust-registry.v1"
+    },
+    "requests": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^REV-[0-9]{3,}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/request_registration"
+      }
+    },
+    "registrations": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[0-9a-f]{32}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/result_registration"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "request_registration": {
+      "type": "object",
+      "required": [
+        "request",
+        "request_sha256",
+        "input_fingerprint",
+        "dependency_snapshot",
+        "challenge",
+        "status",
+        "result_registration_id",
+        "signature"
+      ],
+      "properties": {
+        "request": {
+          "type": "object"
+        },
+        "request_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "input_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "dependency_snapshot": {
+          "type": "object",
+          "required": [
+            "schema",
+            "target",
+            "input_paths",
+            "artifacts",
+            "closure_sha256"
+          ],
+          "properties": {
+            "schema": {
+              "const": "sdlc.review-dependency-snapshot.v1"
+            },
+            "target": {
+              "type": "object"
+            },
+            "input_paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "artifacts": {
+              "type": "object"
+            },
+            "closure_sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          },
+          "additionalProperties": false
+        },
+        "challenge": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "completed"
+          ]
+        },
+        "result_registration_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            }
+          ]
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      },
+      "additionalProperties": false
+    },
+    "result_registration": {
+      "type": "object",
+      "required": [
+        "registration_id",
+        "request_sha256",
+        "input_fingerprint",
+        "challenge",
+        "result",
+        "result_sha256",
+        "signature"
+      ],
+      "properties": {
+        "registration_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "request_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "input_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "challenge": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result": {
+          "type": "object"
+        },
+        "result_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "artifact-index.v1",
+  "title": "DRAFT 产物索引基础合同",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "draft_id",
+    "draft_revision_sha256",
+    "artifacts",
+    "index_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "artifact-index.v1"},
+    "draft_id": {
+      "type": "string",
+      "pattern": "^DRAFT-[0-9]{3,}$"
+    },
+    "draft_revision_sha256": {"$ref": "#/$defs/sha256"},
+    "artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "index_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_target": {
+      "type": "object",
+      "required": [
+        "stage",
+        "owner_id"
+      ],
+      "properties": {
+        "stage": {"enum": ["requirement_split", "integrated_design"]},
+        "owner_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_relations": {
+      "type": "object",
+      "required": [
+        "applies_to",
+        "depends_on_business_ids"
+      ],
+      "properties": {
+        "applies_to": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/review_target"}
+        },
+        "depends_on_business_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3,}$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "record_version",
+        "artifact_id",
+        "business_id",
+        "artifact_type",
+        "source_path",
+        "archive_path",
+        "sha256",
+        "include_in_formal",
+        "review_relations"
+      ],
+      "properties": {
+        "record_version": {"const": "artifact-index-record.v1"},
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^ART-[0-9]{3,}$"
+        },
+        "source_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "archive_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1100,
+          "pattern": "^original/(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "business_id": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3,}$"
+        },
+        "artifact_type": {"type": "string", "minLength": 1},
+        "producer_task_id": {"type": "string", "minLength": 1},
+        "producer_run_id": {"type": "string", "minLength": 1},
+        "input_hashes": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"$ref": "#/$defs/sha256"}
+        },
+        "include_in_formal": {"type": "boolean"},
+        "review_relations": {"$ref": "#/$defs/review_relations"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

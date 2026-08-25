@@ -1,0 +1,1014 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "change-package.v1",
+  "title": "正式变更包合同",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "change_id",
+    "producer_run_id",
+    "reason",
+    "base_versions",
+    "source_refs",
+    "requirement_operations",
+    "global_rule_operations",
+    "acceptance_operations",
+    "design_operations",
+    "material_operations",
+    "task_impacts",
+    "review_impacts",
+    "open_questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "change-package.v1"
+    },
+    "requirement_id": {
+      "type": "string",
+      "pattern": "^REQ-[0-9]{3,}$"
+    },
+    "change_id": {
+      "type": "string",
+      "pattern": "^CHG-[0-9]{3,}$"
+    },
+    "producer_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_versions": {
+      "$ref": "#/$defs/base_versions"
+    },
+    "source_refs": {
+      "$ref": "#/$defs/source_refs"
+    },
+    "requirement_operations": {
+      "$ref": "#/$defs/business_operations"
+    },
+    "global_rule_operations": {
+      "$ref": "#/$defs/business_operations"
+    },
+    "acceptance_operations": {
+      "$ref": "#/$defs/business_operations"
+    },
+    "design_operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/design_operation"
+      }
+    },
+    "material_operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/material_operation"
+      }
+    },
+    "task_impacts": {
+      "$ref": "#/$defs/task_impacts"
+    },
+    "review_impacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "reason_refs"
+        ],
+        "properties": {
+          "stage": {
+            "enum": [
+              "requirement_split",
+              "integrated_design",
+              "task_plan"
+            ]
+          },
+          "reason_refs": {
+            "$ref": "#/$defs/source_refs"
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "minProperties": 1
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "client_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "formal_or_temporary_ref": {
+      "type": "string",
+      "pattern": "^(?:@client:[a-z0-9][a-z0-9._-]{0,127}|(?:FR|GR|AC|DES|MAT|DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC|T|CMAT|CHG)-[0-9]{3,})$"
+    },
+    "source_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/formal_or_temporary_ref"
+      }
+    },
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "base_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement",
+        "design",
+        "test_matrix",
+        "reference_index",
+        "task_plan"
+      ],
+      "properties": {
+        "requirement": {
+          "$ref": "#/$defs/base"
+        },
+        "design": {
+          "$ref": "#/$defs/base"
+        },
+        "test_matrix": {
+          "$ref": "#/$defs/base"
+        },
+        "reference_index": {
+          "$ref": "#/$defs/base"
+        },
+        "task_plan": {
+          "$ref": "#/$defs/base"
+        }
+      }
+    },
+    "next_value": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "references": {
+      "type": "object"
+    },
+    "add_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "client_key",
+        "next_value",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "add"
+        },
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "next_value": {
+          "$ref": "#/$defs/next_value"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "replace_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_id",
+        "base_revision_sha256",
+        "next_value",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "replace"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "next_value": {
+          "$ref": "#/$defs/next_value"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "deprecate_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_id",
+        "base_revision_sha256",
+        "reason",
+        "replacement_refs",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "deprecate"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacement_refs": {
+          "$ref": "#/$defs/source_refs"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "split_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "client_key",
+        "next_value"
+      ],
+      "properties": {
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "next_value": {
+          "$ref": "#/$defs/next_value"
+        }
+      }
+    },
+    "split_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_id",
+        "base_revision_sha256",
+        "reason",
+        "outputs",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "split"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/split_output"
+          }
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "merge_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_ids",
+        "base_revision_sha256",
+        "reason",
+        "output",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "merge"
+        },
+        "target_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output": {
+          "$ref": "#/$defs/split_output"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "relink_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_id",
+        "base_revision_sha256",
+        "references",
+        "source_refs"
+      ],
+      "properties": {
+        "operation": {
+          "const": "relink"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "references": {
+          "$ref": "#/$defs/references"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "business_operation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/add_operation"
+        },
+        {
+          "$ref": "#/$defs/replace_operation"
+        },
+        {
+          "$ref": "#/$defs/deprecate_operation"
+        },
+        {
+          "$ref": "#/$defs/split_operation"
+        },
+        {
+          "$ref": "#/$defs/merge_operation"
+        },
+        {
+          "$ref": "#/$defs/relink_operation"
+        }
+      ]
+    },
+    "business_operations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/business_operation"
+      }
+    },
+    "design_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_kind",
+        "operation",
+        "source_refs"
+      ],
+      "properties": {
+        "object_kind": {
+          "enum": [
+            "design",
+            "artifact"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "replace",
+            "deprecate",
+            "split",
+            "merge",
+            "relink"
+          ]
+        },
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "target_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "base_revision_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "next_value": {
+          "$ref": "#/$defs/next_value"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacement_refs": {
+          "$ref": "#/$defs/source_refs"
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/split_output"
+          }
+        },
+        "output": {
+          "$ref": "#/$defs/split_output"
+        },
+        "references": {
+          "$ref": "#/$defs/references"
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "add"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "client_key",
+              "next_value"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "target_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "base_revision_sha256"
+                  ]
+                },
+                {
+                  "required": [
+                    "reason"
+                  ]
+                },
+                {
+                  "required": [
+                    "replacement_refs"
+                  ]
+                },
+                {
+                  "required": [
+                    "outputs"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                },
+                {
+                  "required": [
+                    "references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "replace"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target_id",
+              "base_revision_sha256",
+              "next_value"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "client_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "reason"
+                  ]
+                },
+                {
+                  "required": [
+                    "replacement_refs"
+                  ]
+                },
+                {
+                  "required": [
+                    "outputs"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                },
+                {
+                  "required": [
+                    "references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "deprecate"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target_id",
+              "base_revision_sha256",
+              "reason",
+              "replacement_refs"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "client_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "next_value"
+                  ]
+                },
+                {
+                  "required": [
+                    "outputs"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                },
+                {
+                  "required": [
+                    "references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "split"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target_id",
+              "base_revision_sha256",
+              "reason",
+              "outputs"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "client_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "next_value"
+                  ]
+                },
+                {
+                  "required": [
+                    "replacement_refs"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                },
+                {
+                  "required": [
+                    "references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "merge"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target_ids",
+              "base_revision_sha256",
+              "reason",
+              "output"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "client_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "next_value"
+                  ]
+                },
+                {
+                  "required": [
+                    "replacement_refs"
+                  ]
+                },
+                {
+                  "required": [
+                    "outputs"
+                  ]
+                },
+                {
+                  "required": [
+                    "references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "relink"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target_id",
+              "base_revision_sha256",
+              "references"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "client_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "target_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "next_value"
+                  ]
+                },
+                {
+                  "required": [
+                    "reason"
+                  ]
+                },
+                {
+                  "required": [
+                    "replacement_refs"
+                  ]
+                },
+                {
+                  "required": [
+                    "outputs"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "material_operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operation",
+            "client_key",
+            "source_material_id",
+            "workspace_path",
+            "sha256",
+            "version_evidence",
+            "source_refs"
+          ],
+          "properties": {
+            "operation": {
+              "const": "add"
+            },
+            "client_key": {
+              "$ref": "#/$defs/client_key"
+            },
+            "source_material_id": {
+              "type": "string",
+              "pattern": "^CMAT-[0-9]{3,}$"
+            },
+            "workspace_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "version_evidence": {},
+            "source_refs": {
+              "$ref": "#/$defs/source_refs"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operation",
+            "target_id",
+            "client_key",
+            "base_revision_sha256",
+            "source_material_id",
+            "workspace_path",
+            "sha256",
+            "version_evidence",
+            "source_refs"
+          ],
+          "properties": {
+            "operation": {
+              "const": "replace"
+            },
+            "target_id": {
+              "type": "string",
+              "pattern": "^MAT-[0-9]{3,}$"
+            },
+            "client_key": {
+              "$ref": "#/$defs/client_key"
+            },
+            "base_revision_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "source_material_id": {
+              "type": "string",
+              "pattern": "^CMAT-[0-9]{3,}$"
+            },
+            "workspace_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "version_evidence": {},
+            "source_refs": {
+              "$ref": "#/$defs/source_refs"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/deprecate_operation"
+        },
+        {
+          "$ref": "#/$defs/relink_operation"
+        }
+      ]
+    },
+    "task_impacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "restore",
+        "add",
+        "close",
+        "unaffected"
+      ],
+      "properties": {
+        "restore": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task_restore"
+          }
+        },
+        "add": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task_add"
+          }
+        },
+        "close": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task_close"
+          }
+        },
+        "unaffected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task_unaffected"
+          }
+        }
+      }
+    },
+    "task_restore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "reason",
+        "source_refs"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{3,}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "task_add": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "client_key",
+        "next_value",
+        "source_refs"
+      ],
+      "properties": {
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "next_value": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "source_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "task_close": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "reason",
+        "replacement_refs"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{3,}$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacement_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    },
+    "task_unaffected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "basis_refs"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{3,}$"
+        },
+        "basis_refs": {
+          "$ref": "#/$defs/source_refs"
+        }
+      }
+    }
+  }
+}

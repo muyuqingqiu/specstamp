@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task-run.v1",
+  "title": "任务运行轮次",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "task_id",
+    "run_number",
+    "runner_thread_id",
+    "status",
+    "task_sha256",
+    "task_review_sha256",
+    "read_manifest_sha256",
+    "upstream_hashes",
+    "code_baseline",
+    "allowed_output_paths",
+    "test_records",
+    "feedback_records",
+    "verification_records",
+    "started_at",
+    "read_confirmation"
+  ],
+  "properties": {
+    "schema_version": {"const": "task-run.v1"},
+    "requirement_id": {"type": "string", "pattern": "^REQ-[0-9]{3,}$"},
+    "task_id": {"type": "string", "pattern": "^T-[0-9]{3,}$"},
+    "run_number": {"type": "integer", "minimum": 1},
+    "runner_thread_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["reading", "active", "stale", "closed"]},
+    "task_sha256": {"$ref": "#/$defs/sha256"},
+    "task_review_sha256": {"$ref": "#/$defs/sha256"},
+    "read_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "upstream_hashes": {
+      "type": "object",
+      "required": ["requirement", "design", "reference_index", "project_rules", "dependencies", "predecessor_outputs"],
+      "properties": {
+        "requirement": {"$ref": "#/$defs/sha256"},
+        "design": {"$ref": "#/$defs/sha256"},
+        "reference_index": {"$ref": "#/$defs/sha256"},
+        "project_rules": {"$ref": "#/$defs/sha256"},
+        "dependencies": {"$ref": "#/$defs/sha256"},
+        "predecessor_outputs": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "code_baseline": {
+      "type": "object",
+      "required": [
+        "project_path",
+        "repo_key",
+        "branch_key",
+        "worktree_key",
+        "git_head",
+        "worktree_diff_sha256"
+      ],
+      "properties": {
+        "project_path": {"type": "string", "minLength": 1},
+        "repo_key": {"type": "string", "minLength": 1},
+        "branch_key": {"type": "string", "minLength": 1},
+        "worktree_key": {"type": "string", "minLength": 1},
+        "git_head": {"type": "string"},
+        "worktree_diff_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "allowed_output_paths": {"type": "array", "items": {"$ref": "#/$defs/path"}, "uniqueItems": true},
+    "test_records": {"type": "array"},
+    "feedback_records": {"type": "array"},
+    "verification_records": {"type": "array"},
+    "started_at": {"type": "string", "minLength": 1},
+    "read_confirmation": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["thread_id", "manifest_sha256", "confirmed_at"],
+          "properties": {
+            "thread_id": {"type": "string", "minLength": 1},
+            "manifest_sha256": {"$ref": "#/$defs/sha256"},
+            "confirmed_at": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    }
+  }
+}

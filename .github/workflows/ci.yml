@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.10"
+            run-tests: false
+          - python-version: "3.11"
+            run-tests: false
+          - python-version: "3.12"
+            run-tests: true
+          - python-version: "3.13"
+            run-tests: true
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 安装开发依赖
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: 语法、Schema 和公开测试
+        if: ${{ matrix.run-tests }}
+        run: |
+          python -m compileall -q src tests
+          python - <<'PY'
+          from codex_sdlc.schemas import available_schema_ids, load_schema
+
+          ids = available_schema_ids()
+          assert ids, "Schema 清单为空"
+          for schema_id in ids:
+              load_schema(schema_id)
+          print(f"Schema 检查通过：{len(ids)} 个")
+          PY
+          python -m pytest -q
+
+      - name: 构建发布包
+        run: python -m build --outdir /tmp/specstamp-dist
+
+      - name: 干净环境安装和命令冒烟
+        run: |
+          python -m venv /tmp/specstamp-smoke
+          /tmp/specstamp-smoke/bin/pip install /tmp/specstamp-dist/*.whl
+          /tmp/specstamp-smoke/bin/specstamp --help >/dev/null
+          /tmp/specstamp-smoke/bin/specstamp version
+          /tmp/specstamp-smoke/bin/codex-sdlc version
+          /tmp/specstamp-smoke/bin/python - <<'PY'
+          from codex_sdlc.schemas import available_schema_ids, load_schema
+
+          ids = available_schema_ids()
+          assert ids
+          load_schema(ids[0])
+          print("SpecStamp 导入和 Schema 读取通过")
+          PY
+          mkdir -p /tmp/specstamp-demo
+          cd /tmp/specstamp-demo
+          /tmp/specstamp-smoke/bin/specstamp init-plain

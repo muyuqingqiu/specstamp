@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">SpecStamp 分享图</title>
+  <desc id="desc">Every step leaves proof.</desc>
+  <rect width="1280" height="640" fill="#F7F7F2"/>
+  <rect x="0" y="0" width="18" height="640" fill="#356AE6"/>
+  <g transform="translate(72 56) scale(.9)">
+    <path d="M16 18H44C51 18 55 22 55 28C55 34 51 38 44 38H26C19 38 15 42 15 49C15 56 19 60 26 60H49" fill="none" stroke="#17212B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="16" cy="18" r="6" fill="#356AE6" stroke="#17212B" stroke-width="3"/>
+    <circle cx="31" cy="38" r="6" fill="#FF6B5D" stroke="#17212B" stroke-width="3"/>
+    <circle cx="26" cy="60" r="6" fill="#356AE6" stroke="#17212B" stroke-width="3"/>
+    <rect x="47" y="52" width="14" height="14" rx="3" fill="#FF6B5D" stroke="#17212B" stroke-width="4"/>
+  </g>
+  <text x="155" y="112" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="800" letter-spacing="-2"><tspan fill="#17212B">Spec</tspan><tspan fill="#356AE6">Stamp</tspan></text>
+  <text x="72" y="292" font-family="Inter, Arial, sans-serif" font-size="74" font-weight="800" fill="#17212B" letter-spacing="-2">Every step</text>
+  <text x="72" y="377" font-family="Inter, Arial, sans-serif" font-size="74" font-weight="800" fill="#17212B" letter-spacing="-2">leaves proof.</text>
+  <text x="76" y="442" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="500" fill="#5B6570">Local-first SDLC for coding agents.</text>
+  <g transform="translate(753 104) scale(5.7)">
+    <path d="M16 18H44C51 18 55 22 55 28C55 34 51 38 44 38H26C19 38 15 42 15 49C15 56 19 60 26 60H49" fill="none" stroke="#17212B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="16" cy="18" r="6" fill="#356AE6" stroke="#17212B" stroke-width="3"/>
+    <circle cx="31" cy="38" r="6" fill="#FF6B5D" stroke="#17212B" stroke-width="3"/>
+    <circle cx="26" cy="60" r="6" fill="#356AE6" stroke="#17212B" stroke-width="3"/>
+    <rect x="47" y="52" width="14" height="14" rx="3" fill="#FF6B5D" stroke="#17212B" stroke-width="4"/>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#5B6570">
+    <text x="76" y="566">REQUIREMENTS</text><circle cx="244" cy="559" r="5" fill="#356AE6"/>
+    <text x="270" y="566">DESIGN</text><circle cx="361" cy="559" r="5" fill="#FF6B5D"/>
+    <text x="387" y="566">TASKS</text><circle cx="467" cy="559" r="5" fill="#356AE6"/>
+    <text x="493" y="566">TESTS</text><circle cx="570" cy="559" r="5" fill="#FF6B5D"/>
+    <text x="596" y="566">EVIDENCE</text>
+  </g>
+</svg>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Goal任务调度员"
+  short_description: "按任务文档串行派发执行员与质检员线程的 Goal 调度技能"
+  default_prompt: "请使用 $goal-task-dispatcher 读取任务文档、创建进度文件，并按顺序派发执行员和质检员线程。"

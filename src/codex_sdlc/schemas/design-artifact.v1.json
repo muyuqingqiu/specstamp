@@ -1,0 +1,910 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-artifact.v1",
+  "title": "模块化设计产物合同",
+  "oneOf": [
+    {"$ref": "#/$defs/submission"},
+    {"$ref": "#/$defs/record"}
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+    },
+    "module_type": {
+      "enum": [
+        "data",
+        "api",
+        "page",
+        "component",
+        "security",
+        "deployment",
+        "field",
+        "special"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "text_items": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/text"}
+    },
+    "fr_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^FR-[0-9]{3,}$"
+      }
+    },
+    "gr_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^GR-[0-9]{3,}$"
+      }
+    },
+    "mat_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^MAT-[0-9]{3,}$"
+      }
+    },
+    "module_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/artifact_id"}
+    },
+    "input_hashes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      "additionalProperties": {"$ref": "#/$defs/sha256"}
+    },
+    "code_evidence_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+      }
+    },
+    "data_field": {
+      "type": "object",
+      "required": [
+        "field_id",
+        "name",
+        "type",
+        "nullable",
+        "default",
+        "unique"
+      ],
+      "properties": {
+        "field_id": {
+          "type": "string",
+          "pattern": "^DF-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "type": {"$ref": "#/$defs/text"},
+        "nullable": {"type": "boolean"},
+        "default": {
+          "type": ["string", "number", "integer", "boolean", "null"]
+        },
+        "unique": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "data_index": {
+      "type": "object",
+      "required": ["index_id", "field_ids", "unique"],
+      "properties": {
+        "index_id": {
+          "type": "string",
+          "pattern": "^IDX-[0-9]{3,}$"
+        },
+        "field_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^DF-[0-9]{3,}$"
+          }
+        },
+        "unique": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "data_relation": {
+      "type": "object",
+      "required": [
+        "relation_id",
+        "from_field_id",
+        "to_field_ref",
+        "cardinality",
+        "on_delete"
+      ],
+      "properties": {
+        "relation_id": {
+          "type": "string",
+          "pattern": "^REL-[0-9]{3,}$"
+        },
+        "from_field_id": {
+          "type": "string",
+          "pattern": "^DF-[0-9]{3,}$"
+        },
+        "to_field_ref": {
+          "type": "string",
+          "pattern": "^DATA-[0-9]{3,}#DF-[0-9]{3,}$"
+        },
+        "cardinality": {
+          "enum": ["one_to_one", "one_to_many", "many_to_one", "many_to_many"]
+        },
+        "on_delete": {"$ref": "#/$defs/text"}
+      },
+      "additionalProperties": false
+    },
+    "data_entity": {
+      "type": "object",
+      "required": [
+        "entity_id",
+        "name",
+        "storage_name",
+        "fields",
+        "unique_constraints",
+        "indexes",
+        "relations"
+      ],
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "pattern": "^ENT-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "storage_name": {"$ref": "#/$defs/text"},
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/data_field"}
+        },
+        "unique_constraints": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^DF-[0-9]{3,}$"
+            }
+          }
+        },
+        "indexes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/data_index"}
+        },
+        "relations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/data_relation"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_content": {
+      "type": "object",
+      "required": [
+        "entities",
+        "lifecycle",
+        "migration_steps",
+        "rollback_steps"
+      ],
+      "properties": {
+        "entities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/data_entity"}
+        },
+        "lifecycle": {
+          "type": "object",
+          "required": ["retention", "deletion"],
+          "properties": {
+            "retention": {"$ref": "#/$defs/text"},
+            "deletion": {"$ref": "#/$defs/text"}
+          },
+          "additionalProperties": false
+        },
+        "migration_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "rollback_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "api_field": {
+      "type": "object",
+      "required": ["field_id", "name", "type", "required", "data_field_ref"],
+      "properties": {
+        "field_id": {
+          "type": "string",
+          "pattern": "^AF-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "type": {"$ref": "#/$defs/text"},
+        "required": {"type": "boolean"},
+        "data_field_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^DATA-[0-9]{3,}#DF-[0-9]{3,}$"
+            },
+            {"type": "null"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "api_error": {
+      "type": "object",
+      "required": ["error_id", "code", "condition", "response"],
+      "properties": {
+        "error_id": {
+          "type": "string",
+          "pattern": "^ERR-[0-9]{3,}$"
+        },
+        "code": {"$ref": "#/$defs/text"},
+        "condition": {"$ref": "#/$defs/text"},
+        "response": {"$ref": "#/$defs/text"}
+      },
+      "additionalProperties": false
+    },
+    "api_endpoint": {
+      "type": "object",
+      "required": [
+        "endpoint_id",
+        "name",
+        "caller",
+        "provider",
+        "transport",
+        "path_or_event",
+        "authentication",
+        "request_fields",
+        "response_fields",
+        "errors",
+        "idempotency",
+        "retry",
+        "timeout_ms"
+      ],
+      "properties": {
+        "endpoint_id": {
+          "type": "string",
+          "pattern": "^EP-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "caller": {"$ref": "#/$defs/text"},
+        "provider": {"$ref": "#/$defs/text"},
+        "transport": {"$ref": "#/$defs/text"},
+        "path_or_event": {"$ref": "#/$defs/text"},
+        "authentication": {"$ref": "#/$defs/text"},
+        "request_fields": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/api_field"}
+        },
+        "response_fields": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/api_field"}
+        },
+        "errors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/api_error"}
+        },
+        "idempotency": {"$ref": "#/$defs/text"},
+        "retry": {"$ref": "#/$defs/text"},
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600000
+        }
+      },
+      "additionalProperties": false
+    },
+    "api_content": {
+      "type": "object",
+      "required": ["endpoints"],
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/api_endpoint"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "page_element": {
+      "type": "object",
+      "required": ["element_id", "name", "data_source_refs"],
+      "properties": {
+        "element_id": {
+          "type": "string",
+          "pattern": "^EL-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "data_source_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(DATA-[0-9]{3,}#DF-[0-9]{3,}|API-[0-9]{3,}#EP-[0-9]{3,})$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "page_states": {
+      "type": "object",
+      "required": [
+        "initial",
+        "loading",
+        "empty",
+        "ready",
+        "error",
+        "forbidden"
+      ],
+      "properties": {
+        "initial": {"$ref": "#/$defs/text"},
+        "loading": {"$ref": "#/$defs/text"},
+        "empty": {"$ref": "#/$defs/text"},
+        "ready": {"$ref": "#/$defs/text"},
+        "error": {"$ref": "#/$defs/text"},
+        "forbidden": {"$ref": "#/$defs/text"}
+      },
+      "additionalProperties": false
+    },
+    "page_item": {
+      "type": "object",
+      "required": [
+        "page_id",
+        "name",
+        "route",
+        "navigation_refs",
+        "elements",
+        "states",
+        "layout",
+        "interactions",
+        "responsive",
+        "ui_material_refs"
+      ],
+      "properties": {
+        "page_id": {
+          "type": "string",
+          "pattern": "^PG-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "route": {"$ref": "#/$defs/text"},
+        "navigation_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^PAGE-[0-9]{3,}#PG-[0-9]{3,}$"
+          }
+        },
+        "elements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/page_element"}
+        },
+        "states": {"$ref": "#/$defs/page_states"},
+        "layout": {"$ref": "#/$defs/text"},
+        "interactions": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "responsive": {"$ref": "#/$defs/text_items"},
+        "ui_material_refs": {"$ref": "#/$defs/mat_refs"}
+      },
+      "additionalProperties": false
+    },
+    "page_content": {
+      "type": "object",
+      "required": ["pages"],
+      "properties": {
+        "pages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/page_item"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "component_item": {
+      "type": "object",
+      "required": [
+        "component_id",
+        "name",
+        "responsibilities",
+        "inputs",
+        "outputs",
+        "dependencies",
+        "states",
+        "error_handling"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "pattern": "^CM-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "responsibilities": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "inputs": {"$ref": "#/$defs/text_items"},
+        "outputs": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "dependencies": {"$ref": "#/$defs/module_refs"},
+        "states": {"$ref": "#/$defs/text_items"},
+        "error_handling": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "component_content": {
+      "type": "object",
+      "required": ["components"],
+      "properties": {
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/component_item"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "security_control": {
+      "type": "object",
+      "required": [
+        "control_id",
+        "name",
+        "assets",
+        "actors",
+        "permissions",
+        "sensitive_data",
+        "authentication",
+        "audit",
+        "threats",
+        "mitigations"
+      ],
+      "properties": {
+        "control_id": {
+          "type": "string",
+          "pattern": "^SEC-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "assets": {"$ref": "#/$defs/text_items"},
+        "actors": {"$ref": "#/$defs/text_items"},
+        "permissions": {"$ref": "#/$defs/text_items"},
+        "sensitive_data": {"$ref": "#/$defs/text_items"},
+        "authentication": {"$ref": "#/$defs/text_items"},
+        "audit": {"$ref": "#/$defs/text_items"},
+        "threats": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "mitigations": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "security_content": {
+      "type": "object",
+      "required": ["controls"],
+      "properties": {
+        "controls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/security_control"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "deployment_environment": {
+      "type": "object",
+      "required": [
+        "environment_id",
+        "name",
+        "configuration_refs",
+        "dependencies"
+      ],
+      "properties": {
+        "environment_id": {
+          "type": "string",
+          "pattern": "^ENV-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "configuration_refs": {"$ref": "#/$defs/text_items"},
+        "dependencies": {"$ref": "#/$defs/text_items"}
+      },
+      "additionalProperties": false
+    },
+    "deployment_content": {
+      "type": "object",
+      "required": [
+        "environments",
+        "rollout_steps",
+        "migration_steps",
+        "rollback_steps",
+        "health_checks"
+      ],
+      "properties": {
+        "environments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/deployment_environment"}
+        },
+        "rollout_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "migration_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "rollback_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "health_checks": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "field_scenario": {
+      "type": "object",
+      "required": [
+        "scenario_id",
+        "name",
+        "prerequisites",
+        "environment",
+        "account_requirements",
+        "data_requirements",
+        "steps",
+        "expected_results",
+        "evidence_requirements",
+        "cleanup_steps"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^FV-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "prerequisites": {"$ref": "#/$defs/text_items"},
+        "environment": {"$ref": "#/$defs/text"},
+        "account_requirements": {"$ref": "#/$defs/text_items"},
+        "data_requirements": {"$ref": "#/$defs/text_items"},
+        "steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "expected_results": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "evidence_requirements": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "cleanup_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "field_content": {
+      "type": "object",
+      "required": ["scenarios"],
+      "properties": {
+        "scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/field_scenario"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "special_item": {
+      "type": "object",
+      "required": [
+        "spec_id",
+        "name",
+        "inputs",
+        "outputs",
+        "dependencies",
+        "review_method",
+        "acceptance",
+        "rollback_steps"
+      ],
+      "properties": {
+        "spec_id": {
+          "type": "string",
+          "pattern": "^SP-[0-9]{3,}$"
+        },
+        "name": {"$ref": "#/$defs/text"},
+        "inputs": {"$ref": "#/$defs/text_items"},
+        "outputs": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "dependencies": {"$ref": "#/$defs/module_refs"},
+        "review_method": {"$ref": "#/$defs/text"},
+        "acceptance": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        },
+        "rollback_steps": {
+          "allOf": [
+            {"$ref": "#/$defs/text_items"},
+            {"minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "special_content": {
+      "type": "object",
+      "required": ["reason", "design_items"],
+      "properties": {
+        "reason": {"$ref": "#/$defs/text"},
+        "design_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/special_item"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "submission_common": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "artifact_id",
+        "type",
+        "requirement_refs",
+        "global_rule_refs",
+        "material_refs",
+        "depends_on",
+        "content",
+        "open_questions"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-artifact.v1"},
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "type": {"$ref": "#/$defs/module_type"},
+        "requirement_refs": {"$ref": "#/$defs/fr_refs"},
+        "global_rule_refs": {"$ref": "#/$defs/gr_refs"},
+        "material_refs": {"$ref": "#/$defs/mat_refs"},
+        "depends_on": {"$ref": "#/$defs/module_refs"},
+        "content": {"type": "object"},
+        "open_questions": {"$ref": "#/$defs/text_items"}
+      }
+    },
+    "record_common": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "artifact_id",
+        "type",
+        "producer_run_id",
+        "input_hashes",
+        "requirement_refs",
+        "global_rule_refs",
+        "material_refs",
+        "depends_on",
+        "code_evidence_paths",
+        "plan_status",
+        "output_path",
+        "revision",
+        "previous_artifact_sha256",
+        "content",
+        "open_questions",
+        "plan_sha256",
+        "plan_module_sha256",
+        "submission_sha256",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-artifact.v1"},
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "artifact_id": {"$ref": "#/$defs/artifact_id"},
+        "type": {"$ref": "#/$defs/module_type"},
+        "producer_run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "input_hashes": {"$ref": "#/$defs/input_hashes"},
+        "requirement_refs": {"$ref": "#/$defs/fr_refs"},
+        "global_rule_refs": {"$ref": "#/$defs/gr_refs"},
+        "material_refs": {"$ref": "#/$defs/mat_refs"},
+        "depends_on": {"$ref": "#/$defs/module_refs"},
+        "code_evidence_paths": {"$ref": "#/$defs/code_evidence_paths"},
+        "plan_status": {
+          "enum": [
+            "required",
+            "provided",
+            "supplement_required",
+            "completed"
+          ]
+        },
+        "output_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^设计/(?!.*(?:^|/)\\.\\.(?:/|$)).+\\.json$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previous_artifact_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "content": {"type": "object"},
+        "open_questions": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "plan_module_sha256": {"$ref": "#/$defs/sha256"},
+        "submission_sha256": {"$ref": "#/$defs/sha256"},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "typed_submission": {
+      "oneOf": [
+        {
+          "properties": {
+            "type": {"const": "data"},
+            "content": {"$ref": "#/$defs/data_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "api"},
+            "content": {"$ref": "#/$defs/api_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "page"},
+            "content": {"$ref": "#/$defs/page_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "component"},
+            "content": {"$ref": "#/$defs/component_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "security"},
+            "content": {"$ref": "#/$defs/security_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "deployment"},
+            "content": {"$ref": "#/$defs/deployment_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "field"},
+            "content": {"$ref": "#/$defs/field_content"}
+          }
+        },
+        {
+          "properties": {
+            "type": {"const": "special"},
+            "content": {"$ref": "#/$defs/special_content"}
+          }
+        }
+      ]
+    },
+    "submission": {
+      "allOf": [
+        {"$ref": "#/$defs/submission_common"},
+        {"$ref": "#/$defs/typed_submission"}
+      ],
+      "unevaluatedProperties": false
+    },
+    "record": {
+      "allOf": [
+        {"$ref": "#/$defs/record_common"},
+        {"$ref": "#/$defs/typed_submission"}
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

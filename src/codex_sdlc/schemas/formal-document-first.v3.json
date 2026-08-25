@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "formal-document-first.v3",
+  "title": "文档优先正式包清单合同",
+  "type": "object",
+  "required": [
+    "formal_contract_version",
+    "workflow_profile",
+    "source_draft_id",
+    "source_revision_sha256",
+    "reviews",
+    "artifact_index",
+    "artifact_manifest",
+    "open_questions"
+  ],
+  "properties": {
+    "formal_contract_version": {"const": "formal.v3"},
+    "workflow_profile": {"const": "document-first.v1"},
+    "source_draft_id": {
+      "type": "string",
+      "pattern": "^DRAFT-[0-9]{3,}$"
+    },
+    "source_revision_sha256": {"$ref": "#/$defs/sha256"},
+    "reviews": {
+      "type": "object",
+      "required": ["requirement_split", "integrated_design"],
+      "properties": {
+        "requirement_split": {"$ref": "#/$defs/review_id"},
+        "integrated_design": {"$ref": "#/$defs/review_id"}
+      },
+      "additionalProperties": false
+    },
+    "artifact_index": {
+      "type": "object",
+      "required": ["source_path", "archive_path", "sha256"],
+      "properties": {
+        "source_path": {"const": "artifact-index.v1.json"},
+        "archive_path": {"const": "original/artifact-index.v1.json"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "artifact_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/manifest_item"}
+    },
+    "open_questions": {
+      "type": "array",
+      "maxItems": 0
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_id": {
+      "type": "string",
+      "pattern": "^REV-[0-9]{3,}$"
+    },
+    "business_id": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Z][A-Z0-9]*-[0-9]{3,}$"
+    },
+    "review_target": {
+      "type": "object",
+      "required": ["stage", "owner_id"],
+      "properties": {
+        "stage": {"enum": ["requirement_split", "integrated_design"]},
+        "owner_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_relations": {
+      "type": "object",
+      "required": ["applies_to", "depends_on_business_ids"],
+      "properties": {
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/review_target"}
+        },
+        "depends_on_business_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/business_id"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "manifest_item": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "business_id",
+        "artifact_type",
+        "source_path",
+        "archive_path",
+        "sha256",
+        "review_relations"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^ART-[0-9]{3,}$"
+        },
+        "business_id": {"$ref": "#/$defs/business_id"},
+        "artifact_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "archive_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1100,
+          "pattern": "^original/(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "review_relations": {"$ref": "#/$defs/review_relations"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

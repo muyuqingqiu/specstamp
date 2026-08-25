@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "material-manifest.v1",
+  "title": "DRAFT 资料清单合同",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "draft_id",
+    "materials"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "material-manifest.v1"
+    },
+    "draft_id": {
+      "type": "string",
+      "pattern": "^DRAFT-[0-9]+$"
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "material_id",
+          "source_kind",
+          "type",
+          "roles",
+          "title",
+          "sensitivity",
+          "applies_to",
+          "status"
+        ],
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "pattern": "^MAT-[0-9]+$"
+          },
+          "source_kind": {
+            "enum": [
+              "file",
+              "external-reference",
+              "secret-reference"
+            ]
+          },
+          "type": {
+            "enum": [
+              "requirement",
+              "technical-solution",
+              "ui-design",
+              "api-document",
+              "database-document",
+              "sample-data",
+              "account",
+              "environment",
+              "field-evidence",
+              "other"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "requirement",
+                "technical-solution",
+                "ui-design",
+                "api-document",
+                "database-document",
+                "sample-data",
+                "account",
+                "environment",
+                "field-evidence",
+                "other"
+              ]
+            }
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sensitivity": {
+            "enum": [
+              "public",
+              "internal",
+              "secret-reference"
+            ]
+          },
+          "applies_to": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          },
+          "status": {
+            "enum": [
+              "active",
+              "archived",
+              "confirmed",
+              "unversioned",
+              "blocked",
+              "drifted"
+            ]
+          },
+          "supersedes": {
+            "type": "string",
+            "pattern": "^MAT-[0-9]+$"
+          },
+          "stored_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "normalized_url_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "access_condition": {
+            "enum": [
+              "public",
+              "authenticated",
+              "restricted"
+            ]
+          },
+          "version_evidence": {
+            "$ref": "#/$defs/external_version_evidence"
+          },
+          "secret_reference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schema_version",
+              "kind",
+              "identifier",
+              "access"
+            ],
+            "properties": {
+              "schema_version": {
+                "const": "secret-reference.v1"
+              },
+              "kind": {
+                "enum": [
+                  "environment-variable",
+                  "keychain-item",
+                  "manual-provision"
+                ]
+              },
+              "identifier": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9._:/@-]+$"
+              },
+              "access": {
+                "enum": [
+                  "runtime-only",
+                  "manual-only"
+                ]
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "source_kind": {
+                  "const": "file"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "stored_path",
+                "source_path",
+                "sha256",
+                "size_bytes",
+                "media_type"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "secret_reference"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "source_kind": {
+                  "const": "external-reference"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "url",
+                "normalized_url_sha256",
+                "access_condition",
+                "version_evidence"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "stored_path"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "secret_reference"
+                    ]
+                  }
+                ]
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "confirmed"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "version_evidence": {
+                        "properties": {
+                          "status": {
+                            "const": "confirmed"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "unversioned"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "version_evidence": {
+                        "properties": {
+                          "status": {
+                            "const": "unversioned"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "source_kind": {
+                  "const": "secret-reference"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "secret_reference"
+              ],
+              "properties": {
+                "sensitivity": {
+                  "const": "secret-reference"
+                }
+              },
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "stored_path"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "sha256"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "external_version_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "normalized_url_sha256",
+        "status",
+        "evidence"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "external-version-evidence.v1"
+        },
+        "normalized_url_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "unversioned",
+            "blocked",
+            "drifted"
+          ]
+        },
+        "evidence": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "material_id",
+                "sha256"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "local_snapshot"
+                },
+                "material_id": {
+                  "type": "string",
+                  "pattern": "^MAT-[0-9]+$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "provider",
+                "revision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "immutable_revision"
+                },
+                "provider": {
+                  "enum": [
+                    "git",
+                    "document",
+                    "api",
+                    "other"
+                  ]
+                },
+                "revision": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "file_key",
+                "version_id"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "figma_revision"
+                },
+                "file_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "version_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "page_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "node_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "node_revision": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "etag",
+                "fetched_sha256",
+                "fetched_at"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "etag_content"
+                },
+                "etag": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "fetched_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "fetched_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "confirmed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unversioned"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

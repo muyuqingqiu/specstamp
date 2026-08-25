@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-summary.v1",
+  "title": "总体设计说明合同",
+  "oneOf": [
+    {"$ref": "#/$defs/submission"},
+    {"$ref": "#/$defs/record"}
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "module_id": {
+      "type": "string",
+      "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+    },
+    "module_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/module_id"}
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}(#[A-Z][A-Za-z0-9_-]*){0,2}$"
+    },
+    "definition": {
+      "type": "object",
+      "required": [
+        "canonical_name",
+        "contract"
+      ],
+      "properties": {
+        "canonical_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "common_object": {
+      "type": "object",
+      "required": [
+        "business_id",
+        "object_type",
+        "source_refs",
+        "applies_to_modules",
+        "definition"
+      ],
+      "properties": {
+        "business_id": {
+          "type": "string",
+          "pattern": "^COMMON-[0-9]{3,}$"
+        },
+        "object_type": {
+          "enum": [
+            "entity",
+            "data_field",
+            "api_field",
+            "page_source",
+            "public_type",
+            "state",
+            "error_code",
+            "authentication",
+            "route",
+            "component",
+            "module_dependency"
+          ]
+        },
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/source_ref"}
+        },
+        "applies_to_modules": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/module_id"}
+        },
+        "definition": {"$ref": "#/$defs/definition"}
+      },
+      "additionalProperties": false
+    },
+    "submission": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "common_objects",
+        "affected_modules",
+        "open_questions"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-summary.v1"},
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "common_objects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/common_object"}
+        },
+        "affected_modules": {"$ref": "#/$defs/module_ids"},
+        "open_questions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_target": {
+      "type": "object",
+      "required": [
+        "stage",
+        "owner_id",
+        "status"
+      ],
+      "properties": {
+        "stage": {"const": "integrated_design"},
+        "owner_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "status": {"const": "stale"}
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "summary_id",
+        "producer_run_id",
+        "input_hashes",
+        "common_objects",
+        "affected_modules",
+        "open_questions",
+        "revision",
+        "previous_summary_sha256",
+        "submission_sha256",
+        "invalidated_modules",
+        "invalidated_review_targets",
+        "summary_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-summary.v1"},
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "summary_id": {
+          "type": "string",
+          "pattern": "^DSUM-[0-9]{3,}$"
+        },
+        "producer_run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "input_hashes": {
+          "type": "object",
+          "minProperties": 2,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1
+          },
+          "additionalProperties": {"$ref": "#/$defs/sha256"}
+        },
+        "common_objects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/common_object"}
+        },
+        "affected_modules": {"$ref": "#/$defs/module_ids"},
+        "open_questions": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previous_summary_sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "submission_sha256": {"$ref": "#/$defs/sha256"},
+        "invalidated_modules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/module_id"}
+        },
+        "invalidated_review_targets": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {"$ref": "#/$defs/review_target"}
+        },
+        "summary_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

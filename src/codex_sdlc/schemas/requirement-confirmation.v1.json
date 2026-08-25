@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-confirmation.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "confirmation_id",
+    "draft_id",
+    "stage",
+    "review_id",
+    "review_request_sha256",
+    "review_registration_id",
+    "review_registration_sha256",
+    "review_result_sha256",
+    "review_input_path",
+    "review_input_sha256",
+    "review_input_snapshot_sha256",
+    "requirement_split_sha256",
+    "requirement_coverage_sha256",
+    "material_snapshot_sha256",
+    "decision_snapshot_sha256",
+    "dependency_snapshot_sha256",
+    "confirmed_at",
+    "confirmation_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "requirement-confirmation.v1"
+    },
+    "confirmation_id": {
+      "type": "string",
+      "pattern": "^RCF-[0-9]{3,}$"
+    },
+    "draft_id": {
+      "type": "string",
+      "pattern": "^DRAFT-[0-9]{3,}$"
+    },
+    "stage": {
+      "const": "requirement_split"
+    },
+    "review_id": {
+      "type": "string",
+      "pattern": "^REV-[0-9]{3,}$"
+    },
+    "review_request_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "review_registration_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_registration_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "review_result_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "review_input_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_input_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "review_input_snapshot_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "requirement_split_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "requirement_coverage_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "material_snapshot_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "decision_snapshot_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "dependency_snapshot_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "confirmed_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confirmation_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

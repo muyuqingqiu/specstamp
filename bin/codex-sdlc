@@ -1,0 +1,71 @@
+#!/bin/sh
+
+# 正式入口必须跟随符号链接找到仓库，不能把用户本机的固定目录写死在脚本里。
+script_path=$0
+while [ -L "$script_path" ]; do
+    link_target=$(readlink "$script_path") || exit 1
+    case "$link_target" in
+        /*) script_path=$link_target ;;
+        *) script_path=$(dirname "$script_path")/$link_target ;;
+    esac
+done
+script_dir=$(CDPATH= cd -P -- "$(dirname -- "$script_path")" 2>/dev/null && pwd)
+if [ -z "$script_dir" ]; then
+    printf '%s\n' "错误：无法确定 SpecStamp 安装目录。" >&2
+    exit 1
+fi
+project_root=$(dirname "$script_dir")
+managed_python=$project_root/.venv/bin/python
+install_script=$project_root/scripts/install_specstamp.py
+
+print_install_command() {
+    if [ "${CODEX_SDLC_PYTHON+x}" = "x" ]; then
+        printf '%s\n' "请运行安装命令：" \
+            "unset CODEX_SDLC_PYTHON && python3 \"$install_script\"" >&2
+    else
+        printf '%s\n' "请运行安装命令：" \
+            "python3 \"$install_script\"" >&2
+    fi
+}
+
+# 明确配置的解释器拥有最高优先级；配置错误时不能静默换用其它 Python。
+if [ "${CODEX_SDLC_PYTHON+x}" = "x" ]; then
+    selected_python=$CODEX_SDLC_PYTHON
+    if [ -z "$selected_python" ] || [ ! -x "$selected_python" ]; then
+        printf '%s\n' "错误：CODEX_SDLC_PYTHON 指定的解释器不可用：$selected_python" >&2
+        print_install_command
+        exit 1
+    fi
+else
+    selected_python=$managed_python
+    if [ ! -x "$selected_python" ]; then
+        printf '%s\n' "错误：找不到可用的 SpecStamp 受管解释器。" >&2
+        print_install_command
+        exit 1
+    fi
+fi
+
+# 在同一个 Python 进程中完成导入和命令执行，既能拦住依赖异常，也不让每条命令重复加载业务模块。
+export PYTHONPATH="$project_root/src${PYTHONPATH:+:$PYTHONPATH}"
+if [ "${CODEX_SDLC_PYTHON+x}" = "x" ]; then
+    CODEX_SDLC_REPAIR_COMMAND="unset CODEX_SDLC_PYTHON && python3 \"$install_script\""
+else
+    CODEX_SDLC_REPAIR_COMMAND="python3 \"$install_script\""
+fi
+export CODEX_SDLC_REPAIR_COMMAND
+exec "$selected_python" -c '
+import os
+import sys
+
+repair_command = os.environ.pop("CODEX_SDLC_REPAIR_COMMAND")
+try:
+    import jsonschema
+    import pypdf
+    from codex_sdlc.cli import main
+except Exception:
+    print("错误：受管解释器缺少 SpecStamp 运行依赖，正式命令没有启动。", file=sys.stderr)
+    print("请运行安装命令：", file=sys.stderr)
+    print(repair_command, file=sys.stderr)
+    raise SystemExit(1)
+raise SystemExit(main())
+' "$@"

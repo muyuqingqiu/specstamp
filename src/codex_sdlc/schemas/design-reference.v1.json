@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-reference.v1",
+  "title": "技术方案原文引用合同",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/submission"
+    },
+    {
+      "$ref": "#/$defs/record"
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "client_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "locator": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "submission_anchor": {
+      "type": "object",
+      "required": [
+        "client_key",
+        "locator"
+      ],
+      "properties": {
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "display_name": {
+          "$ref": "#/$defs/display_name"
+        },
+        "locator": {
+          "$ref": "#/$defs/locator"
+        }
+      },
+      "additionalProperties": false
+    },
+    "record_anchor": {
+      "type": "object",
+      "required": [
+        "key",
+        "locator",
+        "fragment_sha256"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}#[a-z0-9][a-z0-9._-]{0,127}$"
+        },
+        "display_name": {
+          "$ref": "#/$defs/display_name"
+        },
+        "locator": {
+          "$ref": "#/$defs/locator"
+        },
+        "fragment_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "submission": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "client_key",
+        "material_id",
+        "anchors",
+        "applies_to"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "design-reference.v1"
+        },
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "display_name": {
+          "$ref": "#/$defs/display_name"
+        },
+        "material_id": {
+          "type": "string",
+          "pattern": "^MAT-[0-9]{3,}$"
+        },
+        "anchors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/submission_anchor"
+          }
+        },
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^FR-[0-9]{3,}$"
+          }
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "design_id",
+        "draft_id",
+        "client_key",
+        "material_id",
+        "path",
+        "sha256",
+        "anchors",
+        "applies_to",
+        "requirement_confirmation_sha256",
+        "identity_sha256",
+        "status",
+        "record_sha256"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "design-reference.v1"
+        },
+        "design_id": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}$"
+        },
+        "draft_id": {
+          "type": "string",
+          "pattern": "^DRAFT-[0-9]{3,}$"
+        },
+        "client_key": {
+          "$ref": "#/$defs/client_key"
+        },
+        "display_name": {
+          "$ref": "#/$defs/display_name"
+        },
+        "material_id": {
+          "type": "string",
+          "pattern": "^MAT-[0-9]{3,}$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "anchors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/record_anchor"
+          }
+        },
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^FR-[0-9]{3,}$"
+          }
+        },
+        "requirement_confirmation_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "identity_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "confirmed"
+          ]
+        },
+        "supersedes": {
+          "type": "string",
+          "pattern": "^DES-[0-9]{3,}$"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "record_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "confirmed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "confirmed_at"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "confirmed_at"
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

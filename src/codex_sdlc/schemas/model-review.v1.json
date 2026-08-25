@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sdlc.model-review.v1",
+  "x-codex-sdlc-hash-exclude": [
+    "/artifact_sha256"
+  ],
+  "type": "object",
+  "required": [
+    "schema",
+    "review_id",
+    "targets",
+    "reviewer",
+    "status",
+    "coverage_status",
+    "issues",
+    "artifact_sha256",
+    "non_contractual_approvals"
+  ],
+  "properties": {
+    "schema": {
+      "const": "sdlc.model-review.v1"
+    },
+    "review_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targets": {
+      "type": "object",
+      "required": [
+        "source_projection_sha256",
+        "source_index_sha256",
+        "requirement_source_sha256",
+        "design_source_sha256",
+        "questions_sha256",
+        "decisions_sha256",
+        "context_inputs_sha256",
+        "requirement_facts_sha256",
+        "design_facts_sha256",
+        "requirement_semantic_sha256",
+        "design_semantic_sha256"
+      ]
+    },
+    "reviewer": {
+      "type": "object",
+      "required": [
+        "role",
+        "actor_id",
+        "run_id"
+      ],
+      "properties": {
+        "role": {
+          "const": "independent_checker"
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "needs_review",
+        "needs_user",
+        "passed",
+        "stale",
+        "rejected"
+      ]
+    },
+    "coverage_status": {
+      "enum": [
+        "complete",
+        "incomplete"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "issue_id",
+          "severity",
+          "type",
+          "message",
+          "recovery"
+        ]
+      }
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "non_contractual_approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "approval_id",
+          "unit_id",
+          "owner",
+          "reason",
+          "decision_refs"
+        ],
+        "properties": {
+          "approval_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "enum": [
+              "requirement",
+              "design"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

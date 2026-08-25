@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-plan.v1",
+  "title": "开发设计总计划合同",
+  "oneOf": [
+    {"$ref": "#/$defs/submission"},
+    {"$ref": "#/$defs/record"}
+  ],
+  "$defs": {
+    "client_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "module_type": {
+      "enum": [
+        "data",
+        "api",
+        "page",
+        "component",
+        "security",
+        "deployment",
+        "field",
+        "special"
+      ]
+    },
+    "module_status": {
+      "enum": [
+        "required",
+        "provided",
+        "supplement_required",
+        "not_applicable",
+        "blocked",
+        "completed"
+      ]
+    },
+    "fr_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^FR-[0-9]{3,}$"}
+    },
+    "des_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^DES-[0-9]{3,}$"}
+    },
+    "mat_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^MAT-[0-9]{3,}$"}
+    },
+    "text_items": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+    },
+    "evidence_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+      }
+    },
+    "submission_module": {
+      "type": "object",
+      "required": [
+        "client_key",
+        "type",
+        "status",
+        "reason",
+        "requirement_refs",
+        "design_refs",
+        "material_refs",
+        "code_evidence_paths",
+        "inputs",
+        "outputs",
+        "depends_on",
+        "blocked_by"
+      ],
+      "properties": {
+        "client_key": {"$ref": "#/$defs/client_key"},
+        "type": {"$ref": "#/$defs/module_type"},
+        "status": {"$ref": "#/$defs/module_status"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "special_reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "requirement_refs": {"$ref": "#/$defs/fr_refs"},
+        "design_refs": {"$ref": "#/$defs/des_refs"},
+        "material_refs": {"$ref": "#/$defs/mat_refs"},
+        "code_evidence_paths": {"$ref": "#/$defs/evidence_paths"},
+        "inputs": {"$ref": "#/$defs/text_items"},
+        "outputs": {"$ref": "#/$defs/text_items"},
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^@client:[a-z0-9][a-z0-9._-]{0,127}$"
+          }
+        },
+        "blocked_by": {"$ref": "#/$defs/text_items"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"type": {"const": "special"}},
+            "required": ["type"]
+          },
+          "then": {"required": ["special_reason"]},
+          "else": {"not": {"required": ["special_reason"]}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "record_module": {
+      "type": "object",
+      "required": [
+        "module_id",
+        "client_key",
+        "type",
+        "status",
+        "reason",
+        "requirement_refs",
+        "design_refs",
+        "material_refs",
+        "code_evidence_paths",
+        "inputs",
+        "outputs",
+        "depends_on",
+        "blocked_by"
+      ],
+      "properties": {
+        "module_id": {
+          "type": "string",
+          "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+        },
+        "client_key": {"$ref": "#/$defs/client_key"},
+        "type": {"$ref": "#/$defs/module_type"},
+        "status": {"$ref": "#/$defs/module_status"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "special_reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "requirement_refs": {"$ref": "#/$defs/fr_refs"},
+        "design_refs": {"$ref": "#/$defs/des_refs"},
+        "material_refs": {"$ref": "#/$defs/mat_refs"},
+        "code_evidence_paths": {"$ref": "#/$defs/evidence_paths"},
+        "inputs": {"$ref": "#/$defs/text_items"},
+        "outputs": {"$ref": "#/$defs/text_items"},
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+          }
+        },
+        "blocked_by": {"$ref": "#/$defs/text_items"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"type": {"const": "special"}},
+            "required": ["type"]
+          },
+          "then": {"required": ["special_reason"]},
+          "else": {"not": {"required": ["special_reason"]}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "code_evidence_selection": {
+      "type": "object",
+      "required": ["purpose", "rules", "dependencies", "code_files", "upstream_outputs"],
+      "properties": {
+        "purpose": {"const": "integrated_design"},
+        "rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "code_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason_ref"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "reason_ref": {"type": "string", "pattern": "^FR-[0-9]{3,}$"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "upstream_outputs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    },
+    "submission": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "global_impact",
+        "modules",
+        "code_evidence"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-plan.v1"},
+        "draft_id": {"type": "string", "pattern": "^DRAFT-[0-9]{3,}$"},
+        "global_impact": {"$ref": "#/$defs/text_items"},
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/submission_module"}
+        },
+        "code_evidence": {"$ref": "#/$defs/code_evidence_selection"}
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "draft_id",
+        "producer_run_id",
+        "input_hashes",
+        "global_impact",
+        "modules",
+        "mapping",
+        "code_evidence",
+        "submission_sha256",
+        "plan_sha256"
+      ],
+      "properties": {
+        "schema_version": {"const": "design-plan.v1"},
+        "draft_id": {"type": "string", "pattern": "^DRAFT-[0-9]{3,}$"},
+        "producer_run_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "input_hashes": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {"type": "string", "minLength": 1},
+          "additionalProperties": {"$ref": "#/$defs/sha256"}
+        },
+        "global_impact": {"$ref": "#/$defs/text_items"},
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/record_module"}
+        },
+        "mapping": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {"$ref": "#/$defs/client_key"},
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^(DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}$"
+          }
+        },
+        "code_evidence": {"type": "object"},
+        "submission_sha256": {"$ref": "#/$defs/sha256"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

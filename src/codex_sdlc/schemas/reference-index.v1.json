@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "reference-index.v1",
+  "title": "正式引用索引合同",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirement_id",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "reference-index.v1"
+    },
+    "requirement_id": {
+      "type": "string",
+      "pattern": "^REQ-[0-9]{3,}$"
+    },
+    "entries": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^(FR|GR|AC|DES|MAT|DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}(#[A-Za-z0-9][A-Za-z0-9._-]{0,127})?$"
+      },
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "display": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(FR|GR|AC|DES|MAT|DATA|API|PAGE|COMP|SAFE|DEPLOY|FIELD|SPEC)-[0-9]{3,}(#[A-Za-z0-9][A-Za-z0-9._-]{0,127})?$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "heading": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
