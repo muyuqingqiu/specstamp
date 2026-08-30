@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -15,7 +16,7 @@ from codex_sdlc.core.artifact_index import (
     formal_manifest_entries,
     validate_artifact_index_document,
 )
-from codex_sdlc.core.agent_sync import check_agent_entries
+from codex_sdlc.core.agent_sync import check_agent_entries, versioned_cli_entry
 from codex_sdlc.core.backup import backup_integrity_checks, render_backup_candidates
 from codex_sdlc.core.codegraph_context import doctor_check as codegraph_doctor_check
 from codex_sdlc.core.environment import get_install_context
@@ -542,30 +543,96 @@ def _first_probe_message(result: subprocess.CompletedProcess[str]) -> str:
     return "命令没有返回可读说明"
 
 
+def _install_check_target() -> tuple[Path, Path, Path, str, str]:
+    """优先检查当前代码对应的入口，同时保留显式受管目录的原有语义。"""
+
+    context = get_install_context()
+    if "CODEX_SDLC_HOME" in os.environ:
+        install_command = f"python3 {context.sdlc_home / 'scripts/install_specstamp.py'}"
+        probe_cwd = context.sdlc_home if context.sdlc_home.is_dir() else Path.cwd()
+        return (
+            context.bin_dir,
+            context.cli_script,
+            probe_cwd,
+            install_command,
+            'export PATH="$HOME/.local/bin:$PATH"',
+        )
+
+    current_cli = versioned_cli_entry()
+    if current_cli.is_file():
+        current_root = current_cli.parent.parent
+        install_script = current_root / "scripts" / "install_specstamp.py"
+        if install_script.is_file():
+            install_command = f"python3 {install_script}"
+            probe_cwd = current_root
+        else:
+            # wheel、普通 pip 和 pipx 安装没有仓库安装脚本，应使用当前解释器修复同一发行版。
+            install_command = (
+                f"{shlex.quote(sys.executable)} -m pip install --upgrade specstamp"
+            )
+            probe_cwd = Path.cwd()
+        path_repair_command = (
+            'export PATH="$HOME/.local/bin:$PATH"'
+            if install_script.is_file()
+            else f'export PATH="{current_cli.parent}:$PATH"'
+        )
+        return current_cli.parent, current_cli, probe_cwd, install_command, path_repair_command
+
+    install_command = f"python3 {context.sdlc_home / 'scripts/install_specstamp.py'}"
+    probe_cwd = context.sdlc_home if context.sdlc_home.is_dir() else Path.cwd()
+    return (
+        context.bin_dir,
+        context.cli_script,
+        probe_cwd,
+        install_command,
+        'export PATH="$HOME/.local/bin:$PATH"',
+    )
+
+
+def _path_contains_directory(path_entries: list[str], directory: Path) -> bool:
+    """按真实路径判断 PATH，兼容 macOS 的 /var 与 /private/var 等价路径。"""
+
+    try:
+        expected = directory.resolve()
+    except OSError:
+        expected = directory.absolute()
+    for entry in path_entries:
+        if not entry:
+            continue
+        try:
+            actual = Path(entry).resolve()
+        except OSError:
+            actual = Path(entry).absolute()
+        if actual == expected:
+            return True
+    return False
+
+
 def build_install_check() -> tuple[str, bool]:
     """只读检查当前终端入口、运行依赖和全部受管技能内容。"""
 
-    context = get_install_context()
-    expected_path_entry = str(context.bin_dir)
+    bin_dir, cli_script, probe_cwd, install_command, path_repair_command = (
+        _install_check_target()
+    )
+    expected_path_entry = str(bin_dir)
     path_entries = os.environ.get("PATH", "").split(os.pathsep)
 
     lines = ["安装检查"]
     failed = False
-    probe_cwd = context.sdlc_home if context.sdlc_home.is_dir() else Path.cwd()
 
-    cli_exists = context.cli_script.exists()
-    cli_executable = os.access(context.cli_script, os.X_OK)
-    lines.append(f"- CLI：{'已安装' if cli_exists else '缺失'} ({context.cli_script})")
+    cli_exists = cli_script.exists()
+    cli_executable = os.access(cli_script, os.X_OK)
+    lines.append(f"- CLI：{'已安装' if cli_exists else '缺失'} ({cli_script})")
     callable_path = shutil.which("codex-sdlc")
     lines.append(f"- 当前终端可直接调用：{'是' if callable_path else '否'}" + (f" ({callable_path})" if callable_path else ""))
     if not cli_exists or not cli_executable:
         failed = True
         if cli_exists:
-            lines.append(f"- 问题：正式 CLI 不可执行：{context.cli_script}")
+            lines.append(f"- 问题：正式 CLI 不可执行：{cli_script}")
     if callable_path and cli_exists:
         try:
             callable_matches_install = (
-                Path(callable_path).resolve() == context.cli_script.resolve()
+                Path(callable_path).resolve() == cli_script.resolve()
             )
         except OSError:
             callable_matches_install = False
@@ -573,21 +640,18 @@ def build_install_check() -> tuple[str, bool]:
             failed = True
             lines.append(
                 f"- 问题：当前终端调用的是其它入口：{callable_path}；"
-                f"当前安装入口是 {context.cli_script}"
+                f"当前安装入口是 {cli_script}"
             )
 
-    if expected_path_entry in path_entries:
+    if _path_contains_directory(path_entries, bin_dir):
         lines.append(f"- PATH：已包含 {expected_path_entry}")
     elif callable_path:
         lines.append(f"- PATH：未包含 {expected_path_entry}，但当前已可通过 {callable_path} 调用")
     else:
         failed = True
         lines.append(f"- PATH：未包含 {expected_path_entry}")
-        lines.append(
-            "- 修复命令：export PATH=\"$HOME/.local/bin:$PATH\""
-        )
+        lines.append(f"- 修复命令：{path_repair_command}")
 
-    install_command = f"python3 {context.sdlc_home / 'scripts/install_specstamp.py'}"
     if not cli_exists or not cli_executable:
         lines.append(f"- 修复命令：{install_command}")
 

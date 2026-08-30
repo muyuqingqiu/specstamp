@@ -649,7 +649,24 @@ def test_v1_minimum_flow_runs_end_to_end(tmp_path: Path) -> None:
 
 
 def test_doctor_install_reports_real_installation(tmp_path: Path) -> None:
-    result = run_cli(["doctor-install"], cwd=tmp_path)
+    isolated_home = tmp_path / "home"
+    env = {
+        "HOME": str(isolated_home),
+        "CODEX_SDLC_HOME": str(REPO_ROOT),
+        "CODEX_SDLC_PYTHON": sys.executable,
+        "CODEX_SDLC_AGENT_HOME": str(isolated_home / ".agents" / "sdlc"),
+        "CODEX_SDLC_SOURCE_SKILLS_HOME": str(REPO_ROOT / "skills"),
+        "CODEX_SDLC_SHARED_SOURCE_SKILLS_HOME": str(REPO_ROOT / "shared-skills"),
+        "CODEX_SDLC_CODEX_SKILLS_HOME": str(isolated_home / ".codex" / "skills"),
+        "CODEX_SDLC_AGENTS_SKILLS_HOME": str(isolated_home / ".agents" / "skills"),
+        "CODEX_SDLC_CLAUDE_HOME": str(isolated_home / ".claude"),
+        "CODEX_SKILLS_HOME": str(isolated_home / ".codex" / "skills"),
+        "PATH": os.pathsep.join([str(REPO_ROOT / "bin"), os.environ.get("PATH", "")]),
+    }
+    sync_result = run_cli(["agent-sync", "--confirm"], cwd=tmp_path, extra_env=env)
+    assert sync_result.returncode == 0, sync_result.stdout + sync_result.stderr
+
+    result = run_cli(["doctor-install"], cwd=tmp_path, extra_env=env)
     assert result.returncode == 0, result.stderr
     assert "Skill" in result.stdout
     assert "sdlc-task" in result.stdout

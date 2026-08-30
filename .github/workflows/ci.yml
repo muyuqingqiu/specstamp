@@ -75,9 +75,13 @@ jobs:
           mkdir -p /tmp/specstamp-demo
           cd /tmp/specstamp-demo
           /tmp/specstamp-smoke/bin/specstamp init-plain
-          HOME=/tmp/specstamp-agent-home \
-          CODEX_SDLC_AGENT_HOME=/tmp/specstamp-agent-home/.agents/sdlc \
-          CODEX_SDLC_CODEX_SKILLS_HOME=/tmp/specstamp-agent-home/.codex/skills \
-          CODEX_SDLC_AGENTS_SKILLS_HOME=/tmp/specstamp-agent-home/.agents/skills \
-          CODEX_SDLC_CLAUDE_HOME=/tmp/specstamp-agent-home/.claude \
-          /tmp/specstamp-smoke/bin/specstamp agent-sync --dry-run >/dev/null
+          export HOME=/tmp/specstamp-agent-home
+          export PATH="/tmp/specstamp-smoke/bin:$PATH"
+          export CODEX_SDLC_AGENT_HOME=/tmp/specstamp-agent-home/.agents/sdlc
+          export CODEX_SDLC_CODEX_SKILLS_HOME=/tmp/specstamp-agent-home/.codex/skills
+          export CODEX_SDLC_AGENTS_SKILLS_HOME=/tmp/specstamp-agent-home/.agents/skills
+          export CODEX_SDLC_CLAUDE_HOME=/tmp/specstamp-agent-home/.claude
+          specstamp agent-sync --dry-run >/dev/null
+          specstamp agent-sync --confirm >/dev/null
+          specstamp agent-sync --check >/dev/null
+          specstamp doctor-install
