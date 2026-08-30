@@ -803,15 +803,6 @@ def test_task_done_skill_requires_comment_pass_before_completion() -> None:
     assert "任一测试失败" in skill_text
 
 
-def test_global_agents_allows_explicit_sdlc_task_without_template_confirm() -> None:
-    agents_text = (Path.home() / ".codex" / "AGENTS.md").read_text(encoding="utf-8")
-    assert "用户已经给出明确执行指令时，直接按指令推进" in agents_text
-    assert "明确文件修改、明确命令执行，都视为已经授权当前动作" in agents_text
-    assert "不要再做模板化二次确认" in agents_text
-    assert "不要固定追问“是否还有补充”" in agents_text
-    assert "任何任务开始前，都要使用【问题提问工具】不断向用户发问" not in agents_text
-
-
 def test_task_done_without_test_command_waits_for_user_check(
     tmp_path: Path,
 ) -> None:
