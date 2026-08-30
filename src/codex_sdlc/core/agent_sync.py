@@ -7,9 +7,11 @@ import signal
 import shutil
 import hashlib
 import stat
+import sys
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime
+from importlib import metadata
 from pathlib import Path
 
 # 允许干净 Python 预览：当作为独立文件加载且未安装包时，fallback 到标准库 SdlcError
@@ -119,17 +121,53 @@ def default_paths() -> AgentSyncPaths:
     )
 
 
+def _installed_skill_home(folder: str, marker: str) -> Path | None:
+    """通过 wheel 的 RECORD 定位数据文件，兼容虚拟环境和用户级安装目录。"""
+
+    try:
+        distribution = metadata.distribution("specstamp")
+    except metadata.PackageNotFoundError:
+        return None
+    module_suffix = "codex_sdlc/core/agent_sync.py"
+    owns_current_module = any(
+        str(item).replace("\\", "/").endswith(module_suffix)
+        and Path(distribution.locate_file(item)).resolve() == Path(__file__).resolve()
+        for item in distribution.files or ()
+    )
+    if not owns_current_module:
+        return None
+    suffix = f"share/specstamp/{folder}/{marker}/SKILL.md"
+    for item in distribution.files or ():
+        if str(item).replace("\\", "/").endswith(suffix):
+            return Path(distribution.locate_file(item)).resolve().parents[1]
+    return None
+
+
 def versioned_skills_home() -> Path:
-    return Path(__file__).resolve().parents[3] / "skills"
+    repository_home = Path(__file__).resolve().parents[3] / "skills"
+    if repository_home.is_dir():
+        return repository_home
+    return _installed_skill_home("skills", "sdlc-agent-sync") or repository_home
 
 
 def versioned_shared_skills_home() -> Path:
-    return Path(__file__).resolve().parents[3] / "shared-skills"
+    repository_home = Path(__file__).resolve().parents[3] / "shared-skills"
+    if repository_home.is_dir():
+        return repository_home
+    return _installed_skill_home("shared-skills", "agent-capability-sync") or repository_home
 
 
 def versioned_cli_entry() -> Path:
     """版本化仓库内正式 CLI 入口，随来源目录动态推导，不写死本机路径。"""
-    return versioned_skills_home().parent / "bin" / "codex-sdlc"
+
+    repository_entry = versioned_skills_home().parent / "bin" / "codex-sdlc"
+    if repository_entry.is_file():
+        return repository_entry
+    installed_entry = Path(sys.executable).parent / "codex-sdlc"
+    if installed_entry.is_file():
+        return installed_entry
+    discovered_entry = shutil.which("codex-sdlc") or shutil.which("specstamp")
+    return Path(discovered_entry) if discovered_entry else repository_entry
 
 
 def is_sdlc_agent_skill(name: str) -> bool:

@@ -64,7 +64,7 @@ def copy_minimal_repo(dest: Path) -> Path:
         source = REPO_ROOT / name
         if source.exists():
             shutil.copytree(source, dest / name, symlinks=True)
-    for name in ["pyproject.toml", "README.md", "LICENSE"]:
+    for name in ["pyproject.toml", "setup.py", "README.md", "LICENSE", "NOTICE"]:
         source = REPO_ROOT / name
         if source.exists():
             shutil.copy2(source, dest / name)
@@ -188,6 +188,8 @@ def assert_project_wheel(wheel: Path) -> None:
         assert "specstamp = codex_sdlc.cli:main" in entry_point_text
         assert "codex-sdlc = codex_sdlc.cli:main" in entry_point_text
         assert any(name.startswith("codex_sdlc/schemas/") and name.endswith(".json") for name in names)
+        assert any(name.endswith("/share/specstamp/skills/sdlc-agent-sync/SKILL.md") for name in names)
+        assert any(name.endswith("/share/specstamp/shared-skills/agent-capability-sync/SKILL.md") for name in names)
 
 
 def build_offline_wheelhouse(root: Path, repo: Path) -> Path:
