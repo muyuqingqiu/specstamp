@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "面向 AI coding agent 的本机优先 spec-driven development CLI，管理需求、设计、任务、变更和可验证的验收证据"
 readme = "README.md"
 license = "Apache-2.0"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.10"
 authors = [
   {name = "muyuqingqiu"},
@@ -58,8 +58,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/muyuqingqiu/specstamp"
-Documentation = "https://github.com/muyuqingqiu/specstamp/tree/main/docs"
+Homepage = "https://muyuqingqiu.github.io/specstamp/"
+Documentation = "https://muyuqingqiu.github.io/specstamp/"
 Repository = "https://github.com/muyuqingqiu/specstamp.git"
 Issues = "https://github.com/muyuqingqiu/specstamp/issues"
 Discussions = "https://github.com/muyuqingqiu/specstamp/discussions"
@@ -68,8 +68,13 @@ Changelog = "https://github.com/muyuqingqiu/specstamp/blob/main/CHANGELOG.md"
 [project.optional-dependencies]
 dev = [
   "pytest>=8,<9",
+  "pytest-cov>=5,<8",
   "build>=1,<2",
   "setuptools>=77",
+]
+docs = [
+  "mkdocs>=1.6,<2",
+  "mkdocs-material>=9.6,<10",
 ]
 
 [project.scripts]

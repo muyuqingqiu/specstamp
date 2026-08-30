@@ -22,6 +22,17 @@ python3 -m venv .venv
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q
 ```
 
+需要生成本机覆盖率报告时执行：
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q \
+  --cov=codex_sdlc \
+  --cov-report=term-missing \
+  --cov-report=html
+```
+
+完整测试耗时较长。GitHub Actions 每周和手动运行时会把全部测试文件分成四组并行执行，再合并覆盖率数据；普通 Pull Request 仍运行发布安装和公开入口检查，避免每次小改动都等待整套长测试。
+
 如果本地环境没有 `.venv` 或开发依赖，先重新执行安装命令，不要把本机生成的 `.venv`、`.codex-sdlc`、`tmp` 和备份目录提交到仓库。
 
 ## 提交代码

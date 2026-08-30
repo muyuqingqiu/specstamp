@@ -1,0 +1,14 @@
+include CHANGELOG.md
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include NOTICE
+include SECURITY.md
+recursive-include assets *
+recursive-include bin *
+recursive-include docs *
+recursive-include examples *
+recursive-include scripts *.py
+recursive-include tests *.py
+global-exclude .DS_Store
+global-exclude *.py[cod]
+prune docs/归档

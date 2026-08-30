@@ -1,0 +1,132 @@
+name: 全量测试与覆盖率
+
+on:
+  schedule:
+    - cron: "17 19 * * 1"
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    name: 全量测试 ${{ matrix.shard }}/4
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v5
+
+      - name: 配置 Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: 安装开发依赖
+        run: python -m pip install -e ".[dev]"
+
+      - name: 选择当前分片
+        env:
+          SHARD: ${{ matrix.shard }}
+          TOTAL_SHARDS: "4"
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+
+          shard = int(os.environ["SHARD"]) - 1
+          total = int(os.environ["TOTAL_SHARDS"])
+          files = sorted(Path("tests").rglob("test_*.py"))
+          selected = [path.as_posix() for index, path in enumerate(files) if index % total == shard]
+          if not selected:
+              raise SystemExit("当前分片没有测试文件")
+          Path("selected-tests.txt").write_text("\n".join(selected) + "\n", encoding="utf-8")
+          print(f"分片 {shard + 1}/{total}：{len(selected)} 个测试文件")
+          print("\n".join(selected))
+          PY
+
+      - name: 执行全量测试分片
+        env:
+          SHARD: ${{ matrix.shard }}
+          HOME: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}
+          TMPDIR: ${{ runner.temp }}/specstamp-tmp-${{ matrix.shard }}
+          PYTHONDONTWRITEBYTECODE: "1"
+          CODEX_SDLC_PYTHON: ${{ env.pythonLocation }}/bin/python
+          CODEX_SDLC_AGENT_HOME: ${{ runner.temp }}/specstamp-agents-${{ matrix.shard }}
+          CODEX_SDLC_CODEX_SKILLS_DIR: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}/.codex/skills
+          CODEX_SDLC_CODEX_COMMANDS_DIR: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}/.codex/commands
+          CODEX_SDLC_AGENTS_DIR: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}/.agents
+          CODEX_SDLC_CLAUDE_COMMANDS_DIR: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}/.claude/commands
+          COVERAGE_FILE: .coverage.${{ matrix.shard }}
+        run: |
+          mkdir -p "$HOME" "$TMPDIR"
+          mapfile -t tests < selected-tests.txt
+          python -m pytest -q -p no:cacheprovider \
+            --cov=codex_sdlc \
+            --cov-report= \
+            "${tests[@]}"
+
+      - name: 上传分片覆盖率数据
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.shard }}
+          path: .coverage.${{ matrix.shard }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  coverage:
+    name: 合并覆盖率
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v5
+
+      - name: 配置 Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: 安装覆盖率工具
+        run: python -m pip install ".[dev]"
+
+      - name: 下载全部覆盖率数据
+        uses: actions/download-artifact@v5
+        with:
+          pattern: coverage-*
+          path: coverage-data
+          merge-multiple: true
+
+      - name: 合并并生成报告
+        run: |
+          python -m coverage combine coverage-data
+          python -m coverage report --skip-covered
+          python -m coverage xml -o coverage.xml
+          python -m coverage html -d htmlcov
+
+      - name: 上传可浏览的覆盖率报告
+        uses: actions/upload-artifact@v4
+        with:
+          name: specstamp-coverage-${{ github.run_id }}
+          path: |
+            coverage.xml
+            htmlcov
+          retention-days: 30
+
+      - name: 上传到 Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          files: coverage.xml
+          fail_ci_if_error: true
+          use_oidc: true

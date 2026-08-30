@@ -15,7 +15,12 @@ backups/
 docs/归档/
 .DS_Store
 .coverage
+coverage.xml
 htmlcov/
+site/
+build/
+dist/
+*.egg-info/
 
 # 公开仓库治理文件需要覆盖本机全局忽略规则
 !.github/
@@ -23,3 +28,7 @@ htmlcov/
 !.github/ISSUE_TEMPLATE/bug_report.md
 !.github/ISSUE_TEMPLATE/feature_request.md
 !.github/pull_request_template.md
+!.github/workflows/
+!.github/workflows/*.yml
+!.github/dependabot.yml
+!.github/CODEOWNERS

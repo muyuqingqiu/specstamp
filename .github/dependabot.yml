@@ -1,0 +1,39 @@
+version: 2
+
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    groups:
+      python-runtime:
+        dependency-type: production
+      python-development:
+        dependency-type: development
+    labels:
+      - 依赖更新
+      - Python
+    commit-message:
+      prefix: "chore(依赖)"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:30"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - 依赖更新
+      - GitHub Actions
+    commit-message:
+      prefix: "chore(依赖)"

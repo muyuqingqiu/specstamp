@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/specstamp-logo-dark.svg">
-    <img src="assets/brand/specstamp-logo.svg" alt="SpecStamp" width="640">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/assets/brand/specstamp-logo-dark.svg">
+    <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/assets/brand/specstamp-logo.svg" alt="SpecStamp" width="640">
   </picture>
 </p>
 
@@ -12,6 +12,9 @@
 
 <p align="center">
   <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml"><img alt="CI 状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/codeql.yml"><img alt="CodeQL 状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/codeql.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/full-tests.yml"><img alt="全量测试状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/full-tests.yml/badge.svg?branch=main"></a>
+  <a href="https://codecov.io/gh/muyuqingqiu/specstamp"><img alt="代码覆盖率" src="https://codecov.io/gh/muyuqingqiu/specstamp/branch/main/graph/badge.svg"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/blob/main/pyproject.toml"><img alt="Python 3.10 至 3.13" src="https://img.shields.io/badge/Python-3.10--3.13-3776AB?logo=python&logoColor=white"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/blob/main/LICENSE"><img alt="Apache 2.0 许可证" src="https://img.shields.io/github/license/muyuqingqiu/specstamp?color=F5B942"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/discussions"><img alt="GitHub Discussions" src="https://img.shields.io/badge/GitHub-Discussions-8250DF?logo=github&logoColor=white"></a>
@@ -21,7 +24,7 @@
   <a href="#快速体验">快速体验</a> ·
   <a href="#核心能力">核心能力</a> ·
   <a href="#工作流程">工作流程</a> ·
-  <a href="#文档入口">文档</a> ·
+  <a href="https://muyuqingqiu.github.io/specstamp/">在线文档</a> ·
   <a href="#参与项目">参与项目</a>
 </p>
 
@@ -60,6 +63,10 @@ SpecStamp 目前不适合 Windows 环境，也不提供云端多人实时协作�
 
 ## 快速体验
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/docs/%E8%B5%84%E6%BA%90/%E5%BF%AB%E9%80%9F%E4%BD%93%E9%AA%8C.gif" alt="SpecStamp 初始化项目、归档需求资料并给出下一步建议的真实终端演示" width="920">
+</p>
+
 下面的命令会把源码、虚拟环境和示例项目都放进临时目录，不写 Agent 全局目录：
 
 ```bash
@@ -75,7 +82,9 @@ cd "$DEMO_DIR/project"
 
 安装时需要联网获取运行依赖 `jsonschema` 和 `pypdf`。初始化后执行 `next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
 
-需要在真实项目中使用并同步 Agent 入口时，请继续阅读 [快速开始](docs/快速开始.md)。完整安装前可以先运行 `--dry-run-agent-sync` 查看会写入哪些位置。
+需要在真实项目中使用并同步 Agent 入口时，请继续阅读 [快速开始](https://muyuqingqiu.github.io/specstamp/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/)。完整安装前可以先运行 `--dry-run-agent-sync` 查看会写入哪些位置。
+
+仓库还提供一个会保留运行结果、便于逐项查看的 [最小可运行示例](https://github.com/muyuqingqiu/specstamp/blob/main/examples/%E6%9C%80%E5%B0%8F%E9%A1%B9%E7%9B%AE/%E7%A4%BA%E4%BE%8B%E8%AF%B4%E6%98%8E.md)。
 
 ## 工作流程
 
@@ -113,20 +122,22 @@ specstamp agent-sync --check     # 同步后只读复核
 
 ## 文档入口
 
-- [快速开始](docs/快速开始.md)：十分钟完成首次体验和 Agent 入口同步。
-- [使用指南](docs/使用指南.md)：按需求、设计、任务、变更、备份等场景查看命令。
-- [常见问题](docs/常见问题.md)：系统支持、数据位置、安装和卸载说明。
-- [理念与灵感](docs/理念与灵感.md)：项目背后的设计原则与适用边界。
+- [在线文档](https://muyuqingqiu.github.io/specstamp/)：带导航和搜索的完整文档站。
+- [快速开始](https://muyuqingqiu.github.io/specstamp/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/)：十分钟完成首次体验和 Agent 入口同步。
+- [使用指南](https://muyuqingqiu.github.io/specstamp/%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/)：按需求、设计、任务、变更、备份等场景查看命令。
+- [常见问题](https://muyuqingqiu.github.io/specstamp/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/)：系统支持、数据位置、安装和卸载说明。
+- [理念与灵感](https://muyuqingqiu.github.io/specstamp/%E7%90%86%E5%BF%B5%E4%B8%8E%E7%81%B5%E6%84%9F/)：项目背后的设计原则与适用边界。
+- [质量与安全](https://muyuqingqiu.github.io/specstamp/%E8%B4%A8%E9%87%8F%E4%B8%8E%E5%AE%89%E5%85%A8/)：查看自动测试、覆盖率、依赖更新和安全扫描范围。
 
 ## 参与项目
 
 - 有使用问题、流程想法或经验想分享，请到 [GitHub Discussions](https://github.com/muyuqingqiu/specstamp/discussions)。
 - 发现可以稳定复现的问题，请提交 [Issue](https://github.com/muyuqingqiu/specstamp/issues/new/choose)。
-- 准备贡献代码前，请阅读 [参与贡献](CONTRIBUTING.md) 和 [社区行为准则](CODE_OF_CONDUCT.md)。
+- 准备贡献代码前，请阅读 [参与贡献](https://github.com/muyuqingqiu/specstamp/blob/main/CONTRIBUTING.md) 和 [社区行为准则](https://github.com/muyuqingqiu/specstamp/blob/main/CODE_OF_CONDUCT.md)。
 - 涉及安全影响的问题，请使用 [私密漏洞报告](https://github.com/muyuqingqiu/specstamp/security/advisories/new)。
 
 如果 SpecStamp 的方法对你的 AI 编码流程有帮助，欢迎 Star 项目、分享使用场景或参与讨论。
 
 ## 许可证
 
-SpecStamp 使用 [Apache-2.0 许可证](LICENSE)。版本变化见 [变更记录](CHANGELOG.md)。
+SpecStamp 使用 [Apache-2.0 许可证](https://github.com/muyuqingqiu/specstamp/blob/main/LICENSE)。版本变化见 [变更记录](https://github.com/muyuqingqiu/specstamp/blob/main/CHANGELOG.md)。

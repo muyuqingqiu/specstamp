@@ -1,0 +1,66 @@
+site_name: SpecStamp
+site_description: 面向 AI 编码 Agent 的本机优先开发工作流工具
+site_url: https://muyuqingqiu.github.io/specstamp/
+repo_url: https://github.com/muyuqingqiu/specstamp
+repo_name: muyuqingqiu/specstamp
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: zh
+  logo: 资源/specstamp-mark.svg
+  favicon: 资源/specstamp-mark.svg
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: 切换到浅色模式
+
+nav:
+  - 首页: index.md
+  - 快速开始: 快速开始.md
+  - 使用指南: 使用指南.md
+  - 常见问题: 常见问题.md
+  - 理念与灵感: 理念与灵感.md
+  - 质量与安全: 质量与安全.md
+
+plugins:
+  - search:
+      lang: zh
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+
+extra_css:
+  - 资源/样式.css
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/muyuqingqiu/specstamp
+      name: SpecStamp GitHub 仓库
+
+copyright: © 2026 SpecStamp · Apache-2.0

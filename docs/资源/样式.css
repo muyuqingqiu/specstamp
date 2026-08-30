@@ -1,0 +1,24 @@
+:root {
+  --md-primary-fg-color: #17324d;
+  --md-primary-fg-color--light: #28577f;
+  --md-accent-fg-color: #d6972b;
+}
+
+.specstamp-hero {
+  margin: 0 0 2rem;
+  padding: 2.4rem;
+  border: 1px solid color-mix(in srgb, var(--md-primary-fg-color) 20%, transparent);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(214, 151, 43, 0.2), transparent 34%),
+    linear-gradient(135deg, rgba(23, 50, 77, 0.12), rgba(40, 87, 127, 0.04));
+}
+
+.specstamp-hero h2 {
+  margin-top: 0;
+  font-weight: 750;
+}
+
+.md-typeset .md-button--primary {
+  color: #fff;
+}
