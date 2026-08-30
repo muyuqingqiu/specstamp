@@ -60,6 +60,7 @@ jobs:
           SHARD: ${{ matrix.shard }}
           HOME: ${{ runner.temp }}/specstamp-home-${{ matrix.shard }}
           TMPDIR: ${{ runner.temp }}/specstamp-tmp-${{ matrix.shard }}
+          PYTHONPATH: ${{ github.workspace }}/tests
           PYTHONDONTWRITEBYTECODE: "1"
           CODEX_SDLC_PYTHON: ${{ env.pythonLocation }}/bin/python
           CODEX_SDLC_AGENT_HOME: ${{ runner.temp }}/specstamp-agents-${{ matrix.shard }}
