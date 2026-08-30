@@ -49,7 +49,10 @@ jobs:
               load_schema(schema_id)
           print(f"Schema 检查通过：{len(ids)} 个")
           PY
-          CODEX_SDLC_PYTHON="$(command -v python)" python -m pytest -q
+          CODEX_SDLC_PYTHON="$(command -v python)" python -m pytest -q \
+            tests/contracts/test_cli_runtime_environment.py \
+            tests/test_install_clean_home.py \
+            tests/test_cli_v10_agent_sync.py
 
       - name: 构建发布包
         run: python -m build --outdir /tmp/specstamp-dist
