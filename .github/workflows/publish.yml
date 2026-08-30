@@ -90,5 +90,12 @@ jobs:
           name: specstamp-release-${{ github.event.release.tag_name }}
           path: dist
 
+      - name: 准备 PyPI 发布目录
+        run: |
+          mkdir pypi-dist
+          cp dist/*.whl dist/*.tar.gz pypi-dist/
+
       - name: 发布到 PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi-dist
