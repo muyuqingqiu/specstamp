@@ -4,7 +4,7 @@
 
 ## 报告方式
 
-首选入口是公开仓库的私密漏洞报告功能（仓库页面的 Security → Report a vulnerability）。公开仓库尚未启用该功能时，请通过维护者在仓库主页公布的私下联系方式报告。发现可能影响账号、秘密资料、任意文件访问、数据完整性或命令执行的问题时，请先不要公开细节。
+请使用仓库的 [私密漏洞报告](https://github.com/muyuqingqiu/specstamp/security/advisories/new)（Security → Report a vulnerability）。发现可能影响账号、秘密资料、任意文件访问、数据完整性或命令执行的问题时，请先不要公开细节。
 
 报告内容建议包括：
 

@@ -6,6 +6,14 @@
 
 请先阅读项目 README、许可证和安全说明，确认提交内容可以公开发布，并且不包含账号、令牌、私钥、真实业务资料或内部验收材料。
 
+先根据内容选择入口：
+
+- 使用问题、流程想法和经验交流：进入 [GitHub Discussions](https://github.com/muyuqingqiu/specstamp/discussions)。
+- 可以稳定复现的功能、安装或文档问题：提交 [Issue](https://github.com/muyuqingqiu/specstamp/issues/new/choose)。
+- 涉及安全影响的问题：使用 [私密漏洞报告](https://github.com/muyuqingqiu/specstamp/security/advisories/new)。
+
+第一次参与开源项目，可以从带有 [`good first issue`](https://github.com/muyuqingqiu/specstamp/labels/good%20first%20issue) 或 [`help wanted`](https://github.com/muyuqingqiu/specstamp/labels/help%20wanted) 标签的问题开始。
+
 ## 本地开发
 
 ```bash

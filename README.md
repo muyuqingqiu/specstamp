@@ -6,104 +6,106 @@
 </p>
 
 <p align="center">
-  <img alt="Python 3.10 至 3.13" src="https://img.shields.io/badge/Python-3.10--3.13-2F80ED">
-  <img alt="支持 macOS 和 Linux" src="https://img.shields.io/badge/平台-macOS%20%7C%20Linux-22C7A9">
-  <img alt="Apache 2.0 许可证" src="https://img.shields.io/badge/许可证-Apache--2.0-F5B942">
+  <strong>让 AI 编码不再只靠聊天记录。</strong><br>
+  从需求到验收，全程保存在本机，可检查、可恢复、可追溯。
 </p>
 
-# SpecStamp
+<p align="center">
+  <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml"><img alt="CI 状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/blob/main/pyproject.toml"><img alt="Python 3.10 至 3.13" src="https://img.shields.io/badge/Python-3.10--3.13-3776AB?logo=python&logoColor=white"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/blob/main/LICENSE"><img alt="Apache 2.0 许可证" src="https://img.shields.io/github/license/muyuqingqiu/specstamp?color=F5B942"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/discussions"><img alt="GitHub Discussions" src="https://img.shields.io/badge/GitHub-Discussions-8250DF?logo=github&logoColor=white"></a>
+</p>
 
-让 AI 编码不再只靠聊天记录：从需求到验收，全程保存在本机，可检查、可恢复、可追溯。
+<p align="center">
+  <a href="#快速体验">快速体验</a> ·
+  <a href="#核心能力">核心能力</a> ·
+  <a href="#工作流程">工作流程</a> ·
+  <a href="#文档入口">文档</a> ·
+  <a href="#参与项目">参与项目</a>
+</p>
 
-SpecStamp 是一套本机优先的软件开发流程工具。它把需求、设计、任务、变更和验收证据连成一条可追溯的线，适合个人开发者和小型团队在使用 AI 编码 Agent 时，把项目事实稳定地留在项目里，而不是留在聊天记录里。
+# SpecStamp：本机优先的 AI 编码工作流
 
-SpecStamp 通过 `specstamp` 命令和配套 Agent 技能提供能力。
+SpecStamp 是一个使用 Python 构建的本机优先（local-first）CLI，为 Codex、Claude Code 等 AI coding agent 提供 spec-driven development 工作流。它把需求管理、技术设计、任务执行、变更管理和测试验收证据保存在项目中，让开发过程不依赖某一次对话或某一个 Agent。
 
-为兼容已有使用方式，项目同时保留 `codex-sdlc` 命令，两者功能一致。
+项目通过 `specstamp` 命令和配套的 `sdlc-*` Agent 技能提供能力。为兼容已有使用方式，同时保留功能一致的 `codex-sdlc` 命令。
 
-## 项目价值
+> **当前状态：** 项目处于 Beta 阶段，支持 Python 3.10～3.13 和 macOS、Linux 等 POSIX 系统。当前尚未发布到 PyPI，请从 GitHub 源码安装。
 
-- 需求、设计、任务、测试和验收记录保存在同一条流程里，谁都能按顺序看明白。
-- 原始资料原样归档并记录哈希，改没改、改了什么有据可查。
-- 任务完成必须绑定证据：命令、退出码、文件哈希、人工验收结果。
-- 换 Agent、重开会话、切换分支，项目事实不会丢。
+## 为什么需要 SpecStamp
 
-## 痛点
+| 常见问题 | 只依赖聊天记录 | 使用 SpecStamp |
+| --- | --- | --- |
+| 换模型或重开会话 | 上下文容易断开 | 项目事实从结构化文件恢复 |
+| 需求中途变化 | 设计、任务和验收容易不同步 | 通过显式变更生成新的生效版本 |
+| Agent 声称任务完成 | 很难确认实际做了什么 | 完成前必须登记命令、退出码和证据哈希 |
+| 资料散落各处 | 需求、代码和验收串不起来 | 从原始资料到验收结果保留完整引用关系 |
 
-- 和 AI 聊天讨论需求，重开会话或换模型后，上下文接不上。
-- 需求说着说着就变了，设计、任务、验收没有跟着更新。
-- 任务“做完了”却拿不出可复核的证据。
-- 需求、设计、任务、测试、验收散落各处，串不成一条线。
+## 核心能力
 
-## 四项能力
+- **本机优先**：资料和状态保存在项目的 `.codex-sdlc/` 目录，不依赖云端账号，也不会自动上传。
+- **跨 Agent 使用**：同一套技能可以同步到 Codex、Claude Code 和通用 Agent 入口，换工具不换流程。
+- **过程可追溯**：原始资料、讨论结论、设计、任务和变更按编号落盘，并保留引用和 SHA-256 哈希。
+- **完成有证据**：任务完成前必须登记测试命令、整数退出码、来源文件、证据哈希和人工验收结果。
+- **可恢复推进**：换会话、切分支或暂停任务后，可以从正式状态和备份继续，而不是重新解释整个项目。
 
-1. **本机优先**：资料和状态保存在项目的 `.codex-sdlc/` 目录，不依赖云端账号。
-2. **跨 Agent**：同一套技能可以同步到 Codex、Claude Code 和通用 Agent 入口，换工具不换流程。
-3. **过程可追溯**：原始资料、讨论结论、设计、任务和变更都按编号落盘，并保留引用和哈希。
-4. **完成有证据**：任务完成前必须登记测试命令、退出码、文件哈希和人工验收。
+## 适合谁
 
-## 最短快速开始
+- 使用 Codex、Claude Code 或其他 AI 编码 Agent 的个人开发者和小型团队。
+- 希望落地 spec-driven development、requirements management 或可审计开发流程的项目。
+- 需要把需求、设计、任务、测试和验收串成一条可复核记录的长期项目。
 
-以下步骤全部在 `/tmp` 隔离目录完成，不写任何全局目录，适合先体验：
+SpecStamp 目前不适合 Windows 环境，也不提供云端多人实时协作。
+
+## 快速体验
+
+下面的命令会把源码、虚拟环境和示例项目都放进临时目录，不写 Agent 全局目录：
 
 ```bash
-python3 -m venv /tmp/specstamp-demo/venv
-/tmp/specstamp-demo/venv/bin/pip install "<项目源码路径>"
-mkdir -p /tmp/specstamp-demo/project
-cd /tmp/specstamp-demo/project
-/tmp/specstamp-demo/venv/bin/specstamp init-plain
-/tmp/specstamp-demo/venv/bin/specstamp next
+DEMO_DIR="$(mktemp -d "${TMPDIR:-/tmp}/specstamp-demo.XXXXXX")"
+git clone --depth 1 https://github.com/muyuqingqiu/specstamp.git "$DEMO_DIR/source"
+python3 -m venv "$DEMO_DIR/venv"
+"$DEMO_DIR/venv/bin/pip" install "$DEMO_DIR/source"
+mkdir "$DEMO_DIR/project"
+cd "$DEMO_DIR/project"
+"$DEMO_DIR/venv/bin/specstamp" init-plain
+"$DEMO_DIR/venv/bin/specstamp" next
 ```
 
-把 `<项目源码路径>` 换成你克隆下来的项目目录。安装时需要联网获取运行依赖 `jsonschema`、`pypdf`。
+安装时需要联网获取运行依赖 `jsonschema` 和 `pypdf`。初始化后执行 `next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
 
-初始化后执行 `next`，工具会告诉你当前最推荐的下一步。
+需要在真实项目中使用并同步 Agent 入口时，请继续阅读 [快速开始](docs/快速开始.md)。完整安装前可以先运行 `--dry-run-agent-sync` 查看会写入哪些位置。
 
-### 完整安装与 Agent 同步（可选）
-
-在项目根目录执行：
-
-```bash
-python3 scripts/install_specstamp.py --dry-run-agent-sync
-python3 scripts/install_specstamp.py --confirm-agent-sync
-export PATH="$HOME/.local/bin:$PATH"
-specstamp --help
-specstamp version
-specstamp doctor-install
-```
-
-- `--dry-run-agent-sync` 只读预览，不写文件。
-- `--confirm-agent-sync` 是唯一写全局目录的步骤：会创建仓库内的 `.venv`、`$HOME/.local/bin/specstamp` 主入口、`$HOME/.local/bin/codex-sdlc` 兼容入口，并同步 `$HOME/.codex/skills`、`$HOME/.agents/sdlc`、`$HOME/.agents/skills`、`$HOME/.claude/commands` 三套 Agent 入口。写入带事务备份，失败会自动回滚。
-
-## 简化流程
+## 工作流程
 
 ```text
-需求想法 → 归档资料 → 讨论确认 → 整体设计 → 正式建档 → 拆任务
-→ 开发 → 登记证据 → 完成验收 → 后续变化走变更
+需求想法 → 归档原始资料 → 讨论并确认需求 → 完成整体设计 → 正式建档
+→ 拆分任务 → 开发并登记证据 → 完成验收 → 后续变化走显式变更
 ```
 
-- 资料归档：`material`
-- 需求讨论与确认：`discuss`、`capture`、`grill`
-- 设计与建档：`design`、`draft`、`start --file`
-- 任务计划与执行：`tasks`、`plan`、`task`
-- 证据与完成：`task-evidence`、`task-done`
-- 变化管理：`change-plan`、`change-create`、`change-package`、`change-accept`
-- 状态与交接：`status`、`next`、`backup`、`restore`、`export`
-
-## 适用范围
-
-- 适合个人开发者和小型团队。
-- 支持 macOS 和 Linux 等 POSIX 系统。
-- 暂不支持 Windows。
-- 数据保存在本机，不具备云端多人实时协作能力。
+| 阶段 | 常用命令 | 结果 |
+| --- | --- | --- |
+| 初始化与判断下一步 | `init`、`init-plain`、`status`、`next` | 建立项目状态并给出当前主推荐 |
+| 需求资料与讨论 | `material`、`discuss`、`capture`、`grill` | 保存原始资料、结构化需求和关键决定 |
+| 设计与正式建档 | `design`、`draft`、`start --file` | 形成经过确认的需求和设计版本 |
+| 任务计划与执行 | `tasks`、`plan`、`task` | 建立任务边界、依赖、测试和验收要求 |
+| 证据与完成 | `task-evidence`、`task-done`、`regression` | 用真实退出码和证据完成任务与需求验证 |
+| 变化与恢复 | `change-*`、`backup`、`restore`、`handoff` | 显式处理变化并从中断处继续 |
 
 ## 支持的 Agent
 
-- Codex：通过 `agent-sync` 同步 `sdlc-*` 技能。
-- Claude Code：通过 `agent-sync` 同步 `/sdlc-*` 命令。
-- 通用 Agent：通过 `agent-sync` 同步共享技能。
+- **Codex**：通过 `agent-sync` 同步 `sdlc-*` 技能。
+- **Claude Code**：通过 `agent-sync` 同步 `/sdlc-*` 命令。
+- **通用 Agent**：通过 `agent-sync` 同步共享技能入口。
 
-## 理念
+```bash
+specstamp agent-sync --dry-run   # 只读预览
+specstamp agent-sync --confirm   # 确认后写入全局目录
+specstamp agent-sync --check     # 同步后只读复核
+```
+
+## 设计理念
 
 文件比聊天记录可靠，证据比 Agent 自述可靠，显式变更比悄悄漂移可靠。Agent 可以更换，项目事实不能丢；小步推进，每一步都可以检查和恢复；人负责决定，Agent 负责整理和执行。
 
@@ -111,15 +113,20 @@ specstamp doctor-install
 
 ## 文档入口
 
-- [快速开始](docs/快速开始.md)：十分钟完成首次体验。
-- [使用指南](docs/使用指南.md)：按场景说明常用流程。
-- [理念与灵感](docs/理念与灵感.md)：项目背后的设计理念。
-- [常见问题](docs/常见问题.md)：常见疑问与解答。
+- [快速开始](docs/快速开始.md)：十分钟完成首次体验和 Agent 入口同步。
+- [使用指南](docs/使用指南.md)：按需求、设计、任务、变更、备份等场景查看命令。
+- [常见问题](docs/常见问题.md)：系统支持、数据位置、安装和卸载说明。
+- [理念与灵感](docs/理念与灵感.md)：项目背后的设计原则与适用边界。
 
-## 贡献和许可证
+## 参与项目
 
-- [参与贡献](CONTRIBUTING.md)
-- [安全问题报告](SECURITY.md)
-- [社区行为准则](CODE_OF_CONDUCT.md)
-- [变更记录](CHANGELOG.md)
-- 本项目采用 [Apache-2.0 许可证](LICENSE)。
+- 有使用问题、流程想法或经验想分享，请到 [GitHub Discussions](https://github.com/muyuqingqiu/specstamp/discussions)。
+- 发现可以稳定复现的问题，请提交 [Issue](https://github.com/muyuqingqiu/specstamp/issues/new/choose)。
+- 准备贡献代码前，请阅读 [参与贡献](CONTRIBUTING.md) 和 [社区行为准则](CODE_OF_CONDUCT.md)。
+- 涉及安全影响的问题，请使用 [私密漏洞报告](https://github.com/muyuqingqiu/specstamp/security/advisories/new)。
+
+如果 SpecStamp 的方法对你的 AI 编码流程有帮助，欢迎 Star 项目、分享使用场景或参与讨论。
+
+## 许可证
+
+SpecStamp 使用 [Apache-2.0 许可证](LICENSE)。版本变化见 [变更记录](CHANGELOG.md)。

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用问题与经验交流
+    url: https://github.com/muyuqingqiu/specstamp/discussions
+    about: 不确定是不是缺陷时，请先在 Discussions 交流使用场景和想法。
+  - name: 私密报告安全问题
+    url: https://github.com/muyuqingqiu/specstamp/security/advisories/new
+    about: 涉及漏洞、秘密资料或命令执行风险时，请不要创建公开 Issue。
