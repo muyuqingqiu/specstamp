@@ -1,5 +1,5 @@
 site_name: SpecStamp
-site_description: 面向 AI 编码 Agent 的本机优先开发工作流工具
+site_description: A local-first, spec-driven workflow for AI coding agents
 site_url: https://muyuqingqiu.github.io/specstamp/
 repo_url: https://github.com/muyuqingqiu/specstamp
 repo_name: muyuqingqiu/specstamp
@@ -7,7 +7,7 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
-  language: zh
+  language: en
   logo: 资源/specstamp-mark.svg
   favicon: 资源/specstamp-mark.svg
   features:
@@ -24,26 +24,35 @@ theme:
       accent: custom
       toggle:
         icon: material/weather-night
-        name: 切换到深色模式
+        name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: custom
       accent: custom
       toggle:
         icon: material/weather-sunny
-        name: 切换到浅色模式
+        name: Switch to light mode
 
 nav:
-  - 首页: index.md
-  - 快速开始: 快速开始.md
-  - 使用指南: 使用指南.md
-  - 常见问题: 常见问题.md
-  - 理念与灵感: 理念与灵感.md
-  - 质量与安全: 质量与安全.md
+  - Home: index.md
+  - Quick Start: quick-start.md
+  - User Guide: user-guide.md
+  - FAQ: faq.md
+  - Philosophy: philosophy.md
+  - Quality and Security: quality-and-security.md
+  - 简体中文:
+      - 首页: zh-CN/index.md
+      - 快速开始: zh-CN/快速开始.md
+      - 使用指南: zh-CN/使用指南.md
+      - 常见问题: zh-CN/常见问题.md
+      - 理念与灵感: zh-CN/理念与灵感.md
+      - 质量与安全: zh-CN/质量与安全.md
 
 plugins:
   - search:
-      lang: zh
+      lang:
+        - en
+        - zh
 
 markdown_extensions:
   - admonition
@@ -61,6 +70,6 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/muyuqingqiu/specstamp
-      name: SpecStamp GitHub 仓库
+      name: SpecStamp on GitHub
 
 copyright: © 2026 SpecStamp · Apache-2.0

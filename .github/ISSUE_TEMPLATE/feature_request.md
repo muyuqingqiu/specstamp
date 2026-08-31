@@ -1,17 +1,17 @@
 ---
-name: 功能建议
-about: 提出新的功能或改进方向
+name: Feature request
+about: Suggest a new capability or improvement
 title: ""
 labels: "enhancement"
 assignees: ""
 ---
 
-## 要解决的问题
+## Problem to solve
 
-## 建议的使用方式
+## Proposed workflow
 
-## 适用场景
+## Use case
 
-## 不包含的内容
+## Out of scope
 
-## 其他补充
+## Additional context

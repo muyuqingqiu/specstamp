@@ -1,12 +1,15 @@
-# 社区行为准则
+**English** · [简体中文](CODE_OF_CONDUCT.zh-CN.md)
 
-为了让项目保持友好、清晰和可协作，参与项目讨论、Issue、Pull Request、代码审查和其他公开活动时，请遵守以下规则：
+# Code of Conduct
 
-- 尊重不同经验、观点和使用场景；
-- 针对问题和代码讨论，不攻击个人；
-- 使用清楚、可复核、便于继续沟通的表达；
-- 不发布骚扰、歧视、威胁、恶意曝光或违法内容；
-- 不公开他人的账号、联系方式、秘密或内部资料；
-- 发现问题时优先提供事实、复现步骤和影响范围。
+SpecStamp aims to keep its Issues, Discussions, pull requests, code reviews, and other public spaces welcoming, clear, and productive.
 
-维护者可以对违反规则的内容进行隐藏、关闭或限制参与，并会尽量说明处理原因。
+Participants must:
+
+- respect different experience levels, viewpoints, and use cases;
+- discuss problems and code without personal attacks;
+- communicate clearly and provide reproducible facts when possible;
+- avoid harassment, discrimination, threats, malicious exposure, or unlawful content;
+- never disclose another person's account details, contact information, secrets, or private material.
+
+Maintainers may hide or remove content, close discussions, or restrict participation when these rules are violated. Enforcement decisions will be explained when practical.

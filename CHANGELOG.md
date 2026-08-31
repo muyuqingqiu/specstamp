@@ -1,10 +1,12 @@
-# 变更记录
+[English](CHANGELOG.md) · [简体中文](CHANGELOG.zh-CN.md)
+
+# Changelog
 
 ## 0.11.0 - 2026-08-30
 
-- 建立 SpecStamp 独立公开项目。
-- 提供 `specstamp` 主命令和 `codex-sdlc` 兼容命令。
-- 提供需求、设计、任务、变更、测试证据和本机状态管理能力。
-- 完善 GitHub 项目介绍、搜索元数据、社区入口和公开安装指引。
-- 增加可运行示例、真实终端演示和 GitHub Pages 中文文档站。
-- 增加全量测试覆盖率、Dependabot、CodeQL 和可信发布工作流。
+- Established SpecStamp as an independent open-source project.
+- Added the primary `specstamp` command and the compatible `codex-sdlc` command.
+- Added local-first workflows for requirements, designs, tasks, changes, test evidence, and project state.
+- Added GitHub project metadata, community entry points, and public installation guidance.
+- Added a runnable example, a real terminal demo, and bilingual GitHub Pages documentation.
+- Added full-suite coverage reporting, Dependabot, CodeQL, and trusted publishing.

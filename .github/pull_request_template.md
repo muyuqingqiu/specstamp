@@ -1,20 +1,20 @@
-## 改动说明
+## What changed?
 
-## 影响范围
+## Affected areas
 
 - [ ] CLI
 - [ ] Schema
-- [ ] 技能
-- [ ] 文档
-- [ ] 测试
+- [ ] Agent skills
+- [ ] Documentation
+- [ ] Tests
 
-## 验证结果
+## Verification
 
-请列出实际执行的命令和退出码。
+List the commands you ran and their exit codes.
 
-## 发布检查
+## Release checklist
 
-- [ ] 没有提交秘密、本机状态或内部验收资料
-- [ ] 没有新增未说明的用户可见行为
-- [ ] 已同步更新相关文档和变更记录
-- [ ] 已运行与本次改动对应的测试
+- [ ] No credentials, local state, or private project material is included
+- [ ] User-visible behavior changes are documented
+- [ ] Related documentation and changelog entries are updated
+- [ ] Checks relevant to this change have passed

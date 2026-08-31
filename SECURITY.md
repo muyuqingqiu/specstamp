@@ -1,19 +1,19 @@
-# 安全问题报告
+**English** · [简体中文](SECURITY.zh-CN.md)
 
-请不要在公开 Issue、Pull Request、日志、截图或示例文件中发布密码、令牌、私钥、账号信息、真实业务资料或可直接利用的漏洞细节。
+# Security Policy
 
-## 报告方式
+Do not publish passwords, tokens, private keys, account data, private business material, or directly exploitable vulnerability details in public Issues, pull requests, logs, screenshots, or examples.
 
-请使用仓库的 [私密漏洞报告](https://github.com/muyuqingqiu/specstamp/security/advisories/new)（Security → Report a vulnerability）。发现可能影响账号、秘密资料、任意文件访问、数据完整性或命令执行的问题时，请先不要公开细节。
+## Reporting a vulnerability
 
-报告内容建议包括：
+Use [GitHub private vulnerability reporting](https://github.com/muyuqingqiu/specstamp/security/advisories/new) under **Security → Report a vulnerability**.
 
-- 受影响的版本或提交；
-- 运行环境；
-- 最小复现步骤；
-- 影响范围；
-- 是否已经公开或被实际利用。
+Include when possible:
 
-## 处理边界
+- affected version or commit;
+- operating environment;
+- minimal reproduction steps;
+- expected impact;
+- whether the issue is already public or actively exploited.
 
-普通安装失败、文档错误和不涉及安全影响的功能问题，请通过普通 Issue 报告。安全问题会在确认影响范围后安排修复和公开说明。
+Use a normal [Issue](https://github.com/muyuqingqiu/specstamp/issues/new/choose) for installation failures, documentation errors, and functional problems without a security impact.

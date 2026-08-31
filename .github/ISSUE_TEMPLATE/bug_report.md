@@ -1,32 +1,32 @@
 ---
-name: 问题报告
-about: 报告可以稳定复现的功能、安装或文档问题
+name: Bug report
+about: Report a reproducible feature, installation, or documentation problem
 title: ""
 labels: "bug"
 assignees: ""
 ---
 
-## 问题描述
+## What happened?
 
-<!-- 请用简短的话说明实际发生了什么。不要粘贴密码、令牌、私钥或真实业务资料。 -->
+<!-- Describe the problem briefly. Do not include credentials, secrets, or private project data. -->
 
-## 复现步骤
+## Steps to reproduce
 
 1.
 2.
 3.
 
-## 运行环境
+## Environment
 
-- 操作系统：
-- Python 版本：
-- SpecStamp 版本：
-- 安装方式：
+- Operating system:
+- Python version:
+- SpecStamp version:
+- Installation method:
 
-## 实际结果
+## Actual result
 
-## 预期结果
+## Expected result
 
-## 相关日志
+## Relevant logs
 
-<!-- 请先删除秘密、账号和内部路径。 -->
+<!-- Remove credentials, account data, and private paths before posting. -->

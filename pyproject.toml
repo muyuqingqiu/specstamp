@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "specstamp"
 dynamic = ["version"]
-description = "面向 AI coding agent 的本机优先 spec-driven development CLI，管理需求、设计、任务、变更和可验证的验收证据"
+description = "A local-first, spec-driven development CLI for AI coding agents"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
