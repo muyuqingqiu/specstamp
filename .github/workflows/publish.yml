@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 检出发布版本
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: 配置 Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
@@ -47,7 +47,7 @@ jobs:
           /tmp/specstamp-release-smoke/bin/codex-sdlc version
 
       - name: 上传发布包
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: specstamp-release-${{ github.event.release.tag_name }}
           path: dist/*
@@ -61,7 +61,7 @@ jobs:
       contents: write
     steps:
       - name: 下载发布包
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: specstamp-release-${{ github.event.release.tag_name }}
           path: dist
@@ -85,7 +85,7 @@ jobs:
       id-token: write
     steps:
       - name: 下载发布包
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: specstamp-release-${{ github.event.release.tag_name }}
           path: dist
