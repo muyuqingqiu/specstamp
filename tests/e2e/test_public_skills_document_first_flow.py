@@ -1415,6 +1415,11 @@ def test_default_terminal_and_installed_skills_drive_six_distinct_topics(
     # 用例中途失败时也由 pytest 删除仓库外项目，不能把故障现场遗留成活动状态。
     request.addfinalizer(lambda: shutil.rmtree(project, ignore_errors=True))
     _git(project, "init", "-q")
+    # E2E 临时仓库必须自己忽略本机状态目录，不能依赖开发机全局 Git 配置。
+    (project / ".git/info/exclude").write_text(
+        ".codex-sdlc/\n",
+        encoding="utf-8",
+    )
     _git(project, "config", "user.email", "e2e@example.invalid")
     _git(project, "config", "user.name", f"{scenario_name}验收")
     (project / "README.md").write_text(f"# {scenario_name}\n", encoding="utf-8")

@@ -113,6 +113,12 @@ def _project(
     )
     if git_project:
         _git(repository, "init", "-q")
+        # 正式项目会把本机状态目录加入 Git 忽略；测试仓库必须自己声明，
+        # 不能依赖开发机的全局 excludesfile 或其它测试先修改 HOME。
+        (repository / ".git" / "info" / "exclude").write_text(
+            ".codex-sdlc/\n",
+            encoding="utf-8",
+        )
         _git(repository, "config", "user.email", "contract@example.invalid")
         _git(repository, "config", "user.name", "合同测试")
         _git(repository, "add", ".")
