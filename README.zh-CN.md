@@ -13,6 +13,8 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/specstamp/"><img alt="PyPI" src="https://img.shields.io/pypi/v/specstamp?color=F5B942"></a>
+  <a href="https://github.com/muyuqingqiu/specstamp/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/muyuqingqiu/specstamp?display_name=tag&sort=semver&color=F5B942"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml"><img alt="CI 状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/codeql.yml"><img alt="CodeQL 状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/codeql.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/muyuqingqiu/specstamp/actions/workflows/full-tests.yml"><img alt="全量测试状态" src="https://github.com/muyuqingqiu/specstamp/actions/workflows/full-tests.yml/badge.svg?branch=main"></a>
@@ -69,20 +71,18 @@ SpecStamp 目前不适合 Windows 环境，也不提供云端多人实时协作�
   <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/docs/%E8%B5%84%E6%BA%90/%E5%BF%AB%E9%80%9F%E4%BD%93%E9%AA%8C.gif" alt="SpecStamp 初始化项目、归档需求资料并给出下一步建议的真实终端演示" width="920">
 </p>
 
-下面的命令会把源码、虚拟环境和示例项目都放进临时目录，不写 Agent 全局目录：
+下面的命令会从 PyPI 安装 SpecStamp，并在独立目录中完成体验，不写 Agent 全局目录：
 
 ```bash
-DEMO_DIR="$(mktemp -d "${TMPDIR:-/tmp}/specstamp-demo.XXXXXX")"
-git clone --depth 1 https://github.com/muyuqingqiu/specstamp.git "$DEMO_DIR/source"
-python3 -m venv "$DEMO_DIR/venv"
-"$DEMO_DIR/venv/bin/pip" install "$DEMO_DIR/source"
-mkdir "$DEMO_DIR/project"
-cd "$DEMO_DIR/project"
-"$DEMO_DIR/venv/bin/specstamp" init-plain
-"$DEMO_DIR/venv/bin/specstamp" next
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install specstamp
+mkdir specstamp-demo && cd specstamp-demo
+specstamp init-plain
+specstamp next
 ```
 
-安装时需要联网获取运行依赖 `jsonschema` 和 `pypdf`。初始化后执行 `next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
+体验内容只会写入 `.venv` 和 `specstamp-demo`。初始化后执行 `next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
 
 需要在真实项目中使用并同步 Agent 入口时，请继续阅读 [快速开始](https://muyuqingqiu.github.io/specstamp/zh-CN/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/)。完整安装前可以先运行 `--dry-run-agent-sync` 查看会写入哪些位置。
 
