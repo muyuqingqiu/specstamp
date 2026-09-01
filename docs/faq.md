@@ -16,13 +16,13 @@ No. It is a local-first tool for individual developers and small teams. Teams ca
 
 ## How does it work with Codex and Claude Code?
 
-`agent-sync` synchronizes one managed skill source to:
+SpecStamp is the product name, while each client has its own invocation syntax:
 
-- Codex `sdlc-*` skills;
-- Claude Code `/sdlc-*` commands;
-- shared Agent skill directories.
+- Terminal: `specstamp next`.
+- Codex: `$sdlc-next`.
+- Claude Code: `/sdlc-next`.
 
-Preview with `specstamp agent-sync --dry-run`, write with `--confirm`, and verify with `--check`.
+Run `specstamp agent-sync --dry-run` in a terminal to preview the managed entries, `specstamp agent-sync --confirm` to synchronize them, and `specstamp agent-sync --check` to verify them. Codex receives `$sdlc-*` skills, Claude Code receives `/sdlc-*` commands, and shared Agent directories receive the same managed skill source. The `sdlc-*` names are retained for compatibility; these are different entry points to the same SpecStamp workflow, not different products.
 
 ## How do I adopt it in an existing project?
 
@@ -32,11 +32,11 @@ Preview with `specstamp agent-sync --dry-run`, write with `--confirm`, and verif
 
 ## How does a new Agent or session recover context?
 
-Formal facts remain in `.codex-sdlc/`. Start with `specstamp status` and `specstamp next`. Identity checks prevent state from being silently reused across the wrong branch or worktree; backups can restore a matching snapshot when needed.
+Formal facts remain in `.codex-sdlc/`. In a terminal, start with `specstamp status` and `specstamp next`; in Codex, use `$sdlc-status` and `$sdlc-next`; in Claude Code, use `/sdlc-status` and `/sdlc-next`. Identity checks prevent state from being silently reused across the wrong branch or worktree; backups can restore a matching snapshot when needed.
 
 ## When is a task complete?
 
-A task must include reproducible evidence: commands, integer exit codes, results, source files, and original SHA-256 values. `task-done` refuses completion when required evidence or acceptance checks are missing.
+A task must include reproducible evidence: commands, integer exit codes, results, source files, and original SHA-256 values. `specstamp task-done` refuses completion when required evidence or acceptance checks are missing.
 
 ## What happens when a requirement changes?
 
@@ -53,7 +53,7 @@ Run `specstamp doctor-install` first. Common fixes include:
 ## How do I uninstall SpecStamp?
 
 - Project state: preview with `specstamp clean`, then explicitly use `specstamp clean-confirm`.
-- Global entries: remove only the command links and managed skill entries created by the installer or `agent-sync`. Do not delete entire Codex, shared Agent, or Claude directories.
+- Global entries: remove only the command links and managed skill entries created by the installer or `specstamp agent-sync`. Do not delete entire Codex, shared Agent, or Claude directories.
 
 ## Does the temporary quick start write global files?
 

@@ -36,7 +36,7 @@
 
 SpecStamp 是一个使用 Python 构建的本机优先（local-first）CLI，为 Codex、Claude Code 等 AI coding agent 提供 spec-driven development 工作流。它把需求管理、技术设计、任务执行、变更管理和测试验收证据保存在项目中，让开发过程不依赖某一次对话或某一个 Agent。
 
-项目通过 `specstamp` 命令和配套的 `sdlc-*` Agent 技能提供能力。为兼容已有使用方式，同时保留功能一致的 `codex-sdlc` 命令。
+> **这是同一个产品的不同入口：** 产品名是 SpecStamp；在终端中使用 `specstamp ...`；在 Codex 中调用 `$sdlc-*` 技能，例如 `$sdlc-init`、`$sdlc-next`；在 Claude Code 中使用 `/sdlc-*`。`sdlc-*` 技能名和 `codex-sdlc` 终端命令是为了兼容已有使用方式而保留的，它们都属于 SpecStamp，不是另一套产品。
 
 > **当前状态：** 项目处于 Beta 阶段，支持 Python 3.10～3.13 和 macOS、Linux 等 POSIX 系统。可通过 PyPI 安装：`pip install specstamp`。
 
@@ -71,6 +71,8 @@ SpecStamp 目前不适合 Windows 环境，也不提供云端多人实时协作�
   <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/docs/%E8%B5%84%E6%BA%90/%E5%BF%AB%E9%80%9F%E4%BD%93%E9%AA%8C.gif" alt="SpecStamp 初始化项目、归档需求资料并给出下一步建议的真实终端演示" width="920">
 </p>
 
+这段 30 秒演示把关键画面分别停留 2.5～6 秒，便于看清初始化、归档需求资料和获取下一步建议的完整过程。
+
 下面的命令会从 PyPI 安装 SpecStamp，并在独立目录中完成体验，不写 Agent 全局目录：
 
 ```bash
@@ -82,7 +84,7 @@ specstamp init-plain
 specstamp next
 ```
 
-体验内容只会写入 `.venv` 和 `specstamp-demo`。初始化后执行 `next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
+体验内容只会写入 `.venv` 和 `specstamp-demo`。初始化后执行 `specstamp next`，SpecStamp 会根据当前正式状态告诉你最推荐的下一步。
 
 需要在真实项目中使用并同步 Agent 入口时，请继续阅读 [快速开始](https://muyuqingqiu.github.io/specstamp/zh-CN/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/)。完整安装前可以先运行 `--dry-run-agent-sync` 查看会写入哪些位置。
 
@@ -95,26 +97,40 @@ specstamp next
 → 拆分任务 → 开发并登记证据 → 完成验收 → 后续变化走显式变更
 ```
 
-| 阶段 | 常用命令 | 结果 |
+| 阶段 | 终端命令示例 | 结果 |
 | --- | --- | --- |
-| 初始化与判断下一步 | `init`、`init-plain`、`status`、`next` | 建立项目状态并给出当前主推荐 |
-| 需求资料与讨论 | `material`、`discuss`、`capture`、`grill` | 保存原始资料、结构化需求和关键决定 |
-| 设计与正式建档 | `design`、`draft`、`start --file` | 形成经过确认的需求和设计版本 |
-| 任务计划与执行 | `tasks`、`plan`、`task` | 建立任务边界、依赖、测试和验收要求 |
-| 证据与完成 | `task-evidence`、`task-done`、`regression` | 用真实退出码和证据完成任务与需求验证 |
-| 变化与恢复 | `change-*`、`backup`、`restore`、`handoff` | 显式处理变化并从中断处继续 |
+| 初始化与判断下一步 | `specstamp init`、`specstamp status`、`specstamp next` | 建立项目状态并给出当前主推荐 |
+| 需求资料与讨论 | `specstamp material`、`specstamp discuss`、`specstamp capture` | 保存原始资料、结构化需求和关键决定 |
+| 设计与正式建档 | `specstamp design`、`specstamp draft`、`specstamp start --file` | 形成经过确认的需求和设计版本 |
+| 任务计划与执行 | `specstamp tasks`、`specstamp plan`、`specstamp task` | 建立任务边界、依赖、测试和验收要求 |
+| 证据与完成 | `specstamp task-evidence`、`specstamp task-done`、`specstamp regression` | 用真实退出码和证据完成任务与需求验证 |
+| 变化与恢复 | `specstamp change-plan`、`specstamp backup`、`specstamp restore` | 显式处理变化并从中断处继续 |
 
-## 支持的 Agent
-
-- **Codex**：通过 `agent-sync` 同步 `sdlc-*` 技能。
-- **Claude Code**：通过 `agent-sync` 同步 `/sdlc-*` 命令。
-- **通用 Agent**：通过 `agent-sync` 同步共享技能入口。
+## Agent 接入
 
 ```bash
 specstamp agent-sync --dry-run   # 只读预览
 specstamp agent-sync --confirm   # 确认后写入全局目录
 specstamp agent-sync --check     # 同步后只读复核
 ```
+
+同步完成后，按照当前使用的客户端调用对应入口。
+
+**在 Codex 中**
+
+```text
+$sdlc-init
+$sdlc-next
+```
+
+**在 Claude Code 中**
+
+```text
+/sdlc-init
+/sdlc-next
+```
+
+终端命令、Codex 技能和 Claude Code 命令使用的是同一套 SpecStamp 工作流；通用 Agent 目录同步的是同一份受管技能来源。
 
 ## 设计理念
 

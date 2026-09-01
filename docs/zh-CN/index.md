@@ -13,7 +13,22 @@ SpecStamp 把需求、技术设计、任务、变更和验收证据保存在项�
 
 </div>
 
+## 先分清使用入口
+
+SpecStamp 是产品名，实际输入什么取决于当前使用场景：
+
+| 使用场景 | 使用入口 | 示例 |
+| --- | --- | --- |
+| 终端 | `specstamp ...` | `specstamp next` |
+| Codex | `$sdlc-*` 技能 | `$sdlc-next` |
+| Claude Code | `/sdlc-*` 命令 | `/sdlc-next` |
+| 已有 CLI 脚本 | `codex-sdlc ...` 兼容入口 | `codex-sdlc next` |
+
+这些入口使用的是同一套 SpecStamp 工作流。`sdlc-*` 是为兼容已有使用方式保留的入口名，不代表另一套产品。新的终端示例统一使用 `specstamp`，Codex 示例统一使用 `$sdlc-*`，不在同一个场景中混用。
+
 ![SpecStamp 初始化项目、归档需求资料并给出下一步建议的真实终端演示](../资源/快速体验.gif)
+
+这段 30 秒演示把关键画面分别停留 2.5～6 秒，便于看清完整流程。
 
 ## 它解决什么问题
 

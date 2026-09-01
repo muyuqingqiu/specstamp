@@ -13,7 +13,22 @@ SpecStamp keeps requirements, technical designs, tasks, changes, and acceptance 
 
 </div>
 
-![A real terminal demo that initializes a project, archives requirement material, and recommends the next step](资源/快速体验.gif)
+## Choose the right entry point
+
+SpecStamp is the product name. The command you type depends on where you are working:
+
+| Context | Use | Example |
+| --- | --- | --- |
+| Terminal | `specstamp ...` | `specstamp next` |
+| Codex | `$sdlc-*` skill | `$sdlc-next` |
+| Claude Code | `/sdlc-*` command | `/sdlc-next` |
+| Existing CLI scripts | `codex-sdlc ...` compatibility entry point | `codex-sdlc next` |
+
+These entry points run the same SpecStamp workflow. The `sdlc-*` names are retained for compatibility and do not identify a separate product. New terminal examples use `specstamp`; Codex examples use `$sdlc-*` so the two contexts are not mixed.
+
+![A 30-second English tour that initializes a project, archives requirement material, and recommends the next step](资源/quick-tour.en.gif)
+
+The tour uses concise English captions for the same verified 0.11.0 workflow, with each key screen held long enough to read.
 
 ## What it solves
 

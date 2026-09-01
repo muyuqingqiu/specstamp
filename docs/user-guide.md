@@ -2,7 +2,7 @@
 
 # User Guide
 
-This guide groups SpecStamp commands by common development scenarios. Examples use the primary `specstamp` command. The compatible `codex-sdlc` command provides the same behavior.
+This guide is a terminal CLI reference, so its workflow examples use the primary `specstamp` command. When working inside Codex, use the matching `$sdlc-*` skill instead; for example, use `$sdlc-next`, not `specstamp next`. Claude Code uses `/sdlc-*`. The `codex-sdlc` command remains a compatible terminal entry point for existing scripts.
 
 ## Start a new project
 
@@ -82,6 +82,14 @@ specstamp agent-sync --check
 ```
 
 The confirmed operation synchronizes managed Codex, shared Agent, and Claude Code entries. Always inspect the preview and verify the result.
+
+Use the synchronized entry point for the current client:
+
+| Context | Example |
+| --- | --- |
+| Terminal | `specstamp next` |
+| Codex | `$sdlc-next` |
+| Claude Code | `/sdlc-next` |
 
 ## Status, handoff, and export
 

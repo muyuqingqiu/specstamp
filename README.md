@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <a href="#see-it-in-60-seconds">Demo</a> ·
+  <a href="#see-it-in-30-seconds">Demo</a> ·
   <a href="#quick-start">Install</a> ·
   <a href="#why-specstamp">Why SpecStamp</a> ·
   <a href="#workflow">Workflow</a> ·
@@ -37,17 +37,17 @@
 
 SpecStamp is a Python CLI that brings spec-driven development to Codex, Claude Code, and other AI coding agents. It combines an AI agent workflow, requirements management, task planning, change control, and acceptance evidence in structured project files, so development does not depend on one conversation or one agent.
 
-The primary command is `specstamp`. The compatible `codex-sdlc` command remains available for existing workflows. Agent capabilities are exposed through the bundled `sdlc-*` skills.
+> **One product, different entry points:** SpecStamp is the product. In a terminal, run `specstamp ...`. In Codex, invoke the bundled `$sdlc-*` skills, such as `$sdlc-init` and `$sdlc-next`. In Claude Code, use `/sdlc-*`. The `sdlc-*` skill names and `codex-sdlc` CLI entry point are retained for compatibility; they are part of SpecStamp, not a separate product.
 
 > **Status:** Beta. SpecStamp supports Python 3.10–3.13 on macOS, Linux, and other POSIX systems. Windows is not currently supported.
 
-## See it in 60 seconds
+## See it in 30 seconds
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/docs/%E8%B5%84%E6%BA%90/%E5%BF%AB%E9%80%9F%E4%BD%93%E9%AA%8C.gif" alt="SpecStamp initializes a project, archives requirement material, and recommends the next step" width="920">
+  <img src="https://raw.githubusercontent.com/muyuqingqiu/specstamp/main/docs/%E8%B5%84%E6%BA%90/quick-tour.en.gif" alt="A 30-second English tour of SpecStamp initialization, requirement material archiving, and next-step guidance" width="920">
 </p>
 
-The demo initializes a clean project, preserves the original requirement material, and returns one state-aware next step instead of asking you to reconstruct context in a new chat.
+The 30-second tour initializes a clean project, preserves the original requirement material, and returns one state-aware next step instead of asking you to reconstruct context in a new chat. Its concise English captions represent the same verified 0.11.0 workflow without changing CLI behavior.
 
 ## Quick start
 
@@ -62,7 +62,7 @@ specstamp init-plain
 specstamp next
 ```
 
-This trial stays inside `.venv` and `specstamp-demo`; it does not write to global Agent directories. `next` reads the current formal state and recommends the next workflow step.
+This trial stays inside `.venv` and `specstamp-demo`; it does not write to global Agent directories. `specstamp next` reads the current formal state and recommends the next workflow step.
 
 Ready to use it with an Agent? Follow the [10-minute Quick Start](https://muyuqingqiu.github.io/specstamp/quick-start/) to synchronize skills for Codex, Claude Code, or shared Agent directories.
 
@@ -98,14 +98,14 @@ idea → source material → reviewed requirements → integrated design → for
 → task plan → implementation and evidence → acceptance → explicit changes
 ```
 
-| Stage | Common commands | Result |
+| Stage | Terminal examples | Result |
 | --- | --- | --- |
-| Initialize and orient | `init`, `init-plain`, `status`, `next` | Establish project state and identify the next step |
-| Requirements | `material`, `discuss`, `capture`, `grill` | Preserve source material, structured requirements, and decisions |
-| Design and formalize | `design`, `draft`, `start --file` | Create a reviewed requirement and design version |
-| Plan and execute | `tasks`, `plan`, `task` | Define task scope, dependencies, tests, and acceptance |
-| Verify and finish | `task-evidence`, `task-done`, `regression` | Complete work with reproducible evidence |
-| Change and recover | `change-*`, `backup`, `restore`, `handoff` | Handle change explicitly and resume interrupted work |
+| Initialize and orient | `specstamp init`, `specstamp status`, `specstamp next` | Establish project state and identify the next step |
+| Requirements | `specstamp material`, `specstamp discuss`, `specstamp capture` | Preserve source material, structured requirements, and decisions |
+| Design and formalize | `specstamp design`, `specstamp draft`, `specstamp start --file` | Create a reviewed requirement and design version |
+| Plan and execute | `specstamp tasks`, `specstamp plan`, `specstamp task` | Define task scope, dependencies, tests, and acceptance |
+| Verify and finish | `specstamp task-evidence`, `specstamp task-done`, `specstamp regression` | Complete work with reproducible evidence |
+| Change and recover | `specstamp change-plan`, `specstamp backup`, `specstamp restore` | Handle change explicitly and resume interrupted work |
 
 ## Agent integration
 
@@ -115,11 +115,23 @@ specstamp agent-sync --confirm   # synchronize managed entries
 specstamp agent-sync --check     # verify the result without writing
 ```
 
-The synchronization command supports:
+After synchronization, use the entry point for the client you are currently in:
 
-- **Codex:** versioned `sdlc-*` skills.
-- **Claude Code:** compatible `/sdlc-*` commands.
-- **Shared Agent directories:** the same managed skill source for other agents.
+**In Codex**
+
+```text
+$sdlc-init
+$sdlc-next
+```
+
+**In Claude Code**
+
+```text
+/sdlc-init
+/sdlc-next
+```
+
+The terminal commands, Codex skills, and Claude Code commands all drive the same SpecStamp workflow. Shared Agent directories receive the same managed skill source.
 
 ## Design principles
 

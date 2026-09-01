@@ -4,6 +4,8 @@
 
 Goal: complete your first SpecStamp run in about ten minutes.
 
+The installation and bootstrap commands in this guide run in a terminal, so they use `specstamp`. After Agent synchronization, use `$sdlc-*` inside Codex and `/sdlc-*` inside Claude Code.
+
 ## Requirements
 
 - macOS, Linux, or another POSIX system
@@ -37,7 +39,7 @@ Use `specstamp init` inside a Git repository. Initialization creates `.codex-sdl
 /tmp/specstamp-demo/venv/bin/specstamp next
 ```
 
-`next` recommends one formal next step based on current project state. Use `specstamp status` for a broader status summary.
+`specstamp next` recommends one formal next step based on current project state. Use `specstamp status` for a broader status summary.
 
 ## Record a requirement
 
@@ -70,6 +72,26 @@ When the plan is correct, synchronize and verify managed entries:
 
 This can write managed entries to Codex, shared Agent, and Claude Code directories. The preview command remains read-only.
 
+### Use SpecStamp in Codex
+
+Open Codex in the initialized project and invoke the synchronized skills:
+
+```text
+$sdlc-status
+$sdlc-next
+```
+
+### Use SpecStamp in Claude Code
+
+Open Claude Code in the initialized project and use the synchronized commands:
+
+```text
+/sdlc-status
+/sdlc-next
+```
+
+Do not replace these client-specific examples with `specstamp ...`: that form is the terminal CLI, not the Codex or Claude Code invocation syntax.
+
 ## Verify the installation
 
 ```bash
@@ -78,7 +100,7 @@ This can write managed entries to Codex, shared Agent, and Claude Code directori
 /tmp/specstamp-demo/venv/bin/specstamp doctor-install
 ```
 
-`doctor-install` checks command entry points, dependencies, and Agent skill sources without modifying them.
+`specstamp doctor-install` checks command entry points, dependencies, and Agent skill sources without modifying them.
 
 ## Managed source installation
 
@@ -95,7 +117,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ## Cleanup
 
 - Project data: preview with `specstamp clean`, then explicitly run `specstamp clean-confirm`.
-- Global installation: remove only the managed command links and entries created by the installer or `agent-sync`; do not delete entire Codex, Agent, or Claude directories.
+- Global installation: remove only the managed command links and entries created by the installer or `specstamp agent-sync`; do not delete entire Codex, Agent, or Claude directories.
 
 ## Common installation problems
 
