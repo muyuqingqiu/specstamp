@@ -67,7 +67,7 @@ Changelog = "https://github.com/muyuqingqiu/specstamp/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8,<9",
+  "pytest>=8,<10",
   "pytest-cov>=5,<8",
   "build>=1,<2",
   "setuptools>=77",
